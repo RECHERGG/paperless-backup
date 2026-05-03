@@ -1,0 +1,44 @@
+# Paperless Backup Configuration
+
+[backup]
+interval_hours = 6
+filename_format = "{timestamp}.tar.gz"
+
+[paperless]
+container_name = "${PAPERLESS_CONTAINER:paperless-webserver}"
+
+[storage.sftp]
+host = "${SFTP_HOST}"
+port = "${SFTP_PORT:22}"
+username = "${SFTP_USERNAME}"
+
+# Environment variables are used for secrets and optional values
+# Syntax: ${ENV_VAR} or ${ENV_VAR:default}
+password = "${SFTP_PASSWORD}"
+remote_path = "${SFTP_PATH:/backups}"
+
+[retention]
+strategy = "gfs"
+
+[retention.rules]
+hourly = 24
+daily = 7
+weekly = 4
+monthly = 12
+
+# Alternative retention strategies (examples):
+
+# Simple strategy: keep only the last N backups
+# strategy = "simple"
+# keep_last = 20
+
+# Time-based strategy: delete backups older than X days
+# strategy = "time"
+# max_age_days = 30
+
+# Minimal strategy: only daily backups
+# strategy = "daily-only"
+# keep_days = 7
+
+# No cleanup strategy (not recommended)
+# strategy = "none"

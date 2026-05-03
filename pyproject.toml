@@ -1,0 +1,10 @@
+[project]
+name = "paperless-backup"
+version = "0.1.0"
+description = "paperless-backup is a Python application designed to automate the backup of Paperless data, including documents and metadata, to a remote SFTP server. It provides configurable backup intervals, retention policies, and secure handling of credentials through environment variables."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pydantic>=2.13.3",
+    "python-dotenv>=1.2.2",
+]
