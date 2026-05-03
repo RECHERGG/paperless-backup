@@ -5,6 +5,7 @@ description = "paperless-backup is a Python application designed to automate the
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "paramiko>=4.0.0",
     "pydantic>=2.13.3",
     "python-dotenv>=1.2.2",
 ]
