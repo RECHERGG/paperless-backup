@@ -52,24 +52,26 @@ class SFTPStorage(Storage):
         transport = self.ssh.connect()
         self.sftp = SFTPClient(transport)
 
-    def upload(self, local_path: str, remote_filename: str):
+    def upload(self, local_path: str, remote_path: str):
         """
         Upload backup archive to remote storage.
 
         Args:
             local_path: path to local file
-            remote_filename: filename on remote storage
+            remote_path: Full remote path (including directories + filename)
         """
         try:
             self._connect()
 
-            remote_dir = self.remote_path
-            self.sftp.mkdir_p(remote_dir)
+            remote_path = remote_path.replace("\\", "/")
+            remote_dir = remote_path.rsplit("/", 1)[0]
 
-            remote_full_path = f"{remote_dir}/{Path(remote_filename).name}"
+            if remote_dir:
+                self.sftp.mkdir_p(remote_dir)
+                
+            self.sftp.upload_file(local_path, remote_path)
 
-            self.sftp.upload_file(local_path, remote_full_path)
-            logger.info("Upload successful: %s", remote_full_path)
+            logger.info("Upload successful: %s", remote_path)
 
         finally:
             if self.sftp:
