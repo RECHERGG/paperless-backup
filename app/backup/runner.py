@@ -10,7 +10,7 @@ from app.backup.exporter import export_data
 from app.backup.archive import create_archive
 from app.backup.utils import cleanup_workspace
 from app.config.typed import AppConfig
-from storage.factory import get_storage
+from app.storage.factory import get_storage
 
 logger = logging.getLogger(__name__)
 

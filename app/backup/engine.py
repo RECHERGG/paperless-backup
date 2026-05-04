@@ -24,7 +24,6 @@ def generate_filename(format_str: str) -> str:
         str: Generated filename.
     """
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    logger.info(format_str)
     filename = format_str.format(timestamp=timestamp)
 
     logger.debug("Generated backup filename: %s", filename)

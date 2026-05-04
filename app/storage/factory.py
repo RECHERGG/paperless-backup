@@ -3,7 +3,7 @@ Storage factory for selecting the correct backend.
 """
 
 from app.config.typed import AppConfig
-from storage.sftp_storage import SFTPStorage
+from app.storage.sftp_storage import SFTPStorage
 
 
 def get_storage(config: AppConfig):

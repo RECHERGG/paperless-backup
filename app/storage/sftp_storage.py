@@ -10,9 +10,9 @@ import logging
 from pathlib import Path
 
 from app.config.typed import SFTPConfig
-from storage.base import Storage
-from storage.ssh_client import SSHClient
-from storage.sftp_client import SFTPClient
+from app.storage.base import Storage
+from app.storage.ssh_client import SSHClient
+from app.storage.sftp_client import SFTPClient
 
 logger = logging.getLogger(__name__)
 
