@@ -1,0 +1,3 @@
+- [ ] retention rules
+- [ ] .tmp file
+- [ ] checksume checking
