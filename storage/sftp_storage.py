@@ -9,6 +9,7 @@ Responsible ONLY for:
 import logging
 from pathlib import Path
 
+from app.config.typed import SFTPConfig
 from storage.base import Storage
 from storage.ssh_client import SSHClient
 from storage.sftp_client import SFTPClient
@@ -23,19 +24,19 @@ class SFTPStorage(Storage):
     - password authentication (fallback)
     """
 
-    def __init__(self, config: dict):
+    def __init__(self, config: SFTPConfig):
         """
         Args:
             config: storage configuration dictionary
         """
-        self.host = config["host"]
-        self.port = int(config.get("port"))
-        self.username = config["username"]
+        self.host = config.host
+        self.port = int(config.port)
+        self.username = config.username
 
-        self.password = config.get("password")
-        self.key = config.get("key")
+        self.password = config.password
+        self.key = config.key
 
-        self.remote_path = config.get("remote_path").strip("/")
+        self.remote_path = config.remote_path.strip("/")
 
         self.ssh = SSHClient(
             self.host,

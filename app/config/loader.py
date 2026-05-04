@@ -15,7 +15,7 @@ import os
 import re
 from copy import deepcopy
 
-ENV_PATTERN = re.compile(r"\$\{([^}:]+)(?::([^}]+))?\}")
+ENV_PATTERN = re.compile(r"\$\{([^}:]+)(?::([\s\S]*))?\}")
 
 def resolve_env(values: str) -> str:
     """
@@ -81,5 +81,4 @@ def load_config(path: str ="config.toml") -> dict:
     with open(path, "rb") as f:
         raw = tomllib.load(f)
 
-    raw = resolve_config(deepcopy(raw))
-    return raw
+    return resolve_config(deepcopy(raw))

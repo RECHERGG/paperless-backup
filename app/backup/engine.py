@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 
 from app.backup.runner import run_backup
+from app.config.typed import AppConfig
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +24,13 @@ def generate_filename(format_str: str) -> str:
         str: Generated filename.
     """
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    logger.info(format_str)
     filename = format_str.format(timestamp=timestamp)
 
     logger.debug("Generated backup filename: %s", filename)
     return filename
 
-def run(config: dict):
+def run(config: AppConfig):
     """
     Execute the backup process using provided configuration.
 
@@ -37,7 +39,7 @@ def run(config: dict):
     """
     logger.info("Starting backup process...")
 
-    filename = generate_filename(config["backup"]["filename_format"])
+    filename = generate_filename(config.backup.filename_template)
     run_backup(config, filename)
 
     logger.info("Backup process finished.")

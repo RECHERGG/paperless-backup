@@ -9,23 +9,24 @@ import tempfile
 from app.backup.exporter import export_data
 from app.backup.archive import create_archive
 from app.backup.utils import cleanup_workspace
+from app.config.typed import AppConfig
 from storage.factory import get_storage
 
 logger = logging.getLogger(__name__)
 
 
-def run_backup(config: dict, filename: str) -> None:
+def run_backup(config: AppConfig, filename: str) -> None:
     """
     Execute the full backup pipeline:
     export -> archive -> upload.
 
     Args:
-        config (dict): Full application configuration.
+        config (AppConfig): Full application configuration.
         filename (str): Target filename for archive.
     """
-    container = config["paperless"]["container_name"]
-    delete = config["backup"]["delete_local_after_upload"]
-    keep_failed = config["backup"]["keep_failed_backups"]
+    container = config.paperless.container_name
+    delete = config.backup.delete_local_after_upload
+    keep_failed = config.backup.keep_failed_backups
 
     work_dir = Path(tempfile.mkdtemp())
     export_path = work_dir / "export"

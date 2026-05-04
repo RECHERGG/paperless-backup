@@ -2,25 +2,24 @@
 Storage factory for selecting the correct backend.
 """
 
+from app.config.typed import AppConfig
 from storage.sftp_storage import SFTPStorage
 
 
-def get_storage(config: dict):
+def get_storage(config: AppConfig):
     """
     Create a storage instance based on configuration.
 
     Args:
-        config (dict): Full application configuration.
+        config (AppConfig): Full application configuration.
     
     Returns:
         Storage: Concrete storage implementation.
 
     Raises:
         ValueError: If no valid storage config found.
-    """
-    storage_config = config["storage"]
-    
-    if "sftp" in storage_config:
-        return SFTPStorage(storage_config["sftp"])
+    """ 
+    if config.storage_sftp:
+        return SFTPStorage(config.storage_sftp)
     
     raise ValueError("No valid storage configuration found")

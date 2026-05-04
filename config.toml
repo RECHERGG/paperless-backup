@@ -1,10 +1,10 @@
 # Paperless Backup Configuration
 
 [backup]
-interval_hours = 6
-filename_format = "{timestamp}.tar.gz"
-delete_local_after_upload = true
-keep_failed_backups = true
+interval_hours = "${BACKUP_INTERVAL_HOURS:6}"
+filename_template = "${BACKUP_FILENAME_TEMPLATE:{timestamp}.tar.gz}"
+delete_local_after_upload = "${BACKUP_DELETE_LOCAL_AFTER_UPLOAD:true}"
+keep_failed_backups = "${BACKUP_KEEP_FAILED:true}"
 
 [paperless]
 container_name = "${PAPERLESS_CONTAINER:paperless-webserver}"
@@ -23,10 +23,10 @@ remote_path = "${SFTP_PATH:paperless-backups}"
 strategy = "gfs"
 
 [retention.rules]
-hourly = 24
-daily = 7
-weekly = 4
-monthly = 12
+hourly = "${RETENTION_HOURLY:24}"
+daily = "${RETENTION_DAILY:7}"
+weekly = "${RETENTION_WEEKLY:4}"
+monthly = "${RETENTION_MONTHLY:12}"
 
 # Alternative retention strategies (examples):
 

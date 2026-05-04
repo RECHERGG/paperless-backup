@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from app.config.loader import load_config
 from app.backup.engine import run
+from app.config.typed import load_typed_config
 
 
 def setup_logging():
@@ -53,7 +54,7 @@ def main() -> int:
         load_environment(base_dir)
 
         logger.info("Loading configuration...")
-        config = load_config()
+        config = load_typed_config()
 
         logger.info("Starting backup job...")
         run(config)
