@@ -3,6 +3,8 @@
 [backup]
 interval_hours = 6
 filename_format = "{timestamp}.tar.gz"
+delete_local_after_upload = true
+keep_failed_backups = true
 
 [paperless]
 container_name = "${PAPERLESS_CONTAINER:paperless-webserver}"
@@ -12,10 +14,10 @@ host = "${SFTP_HOST}"
 port = "${SFTP_PORT:22}"
 username = "${SFTP_USERNAME}"
 
-# Environment variables are used for secrets and optional values
-# Syntax: ${ENV_VAR} or ${ENV_VAR:default}
+key = "${SFTP_KEY}"
 password = "${SFTP_PASSWORD}"
-remote_path = "${SFTP_PATH:/backups}"
+
+remote_path = "${SFTP_PATH:paperless-backups}"
 
 [retention]
 strategy = "gfs"

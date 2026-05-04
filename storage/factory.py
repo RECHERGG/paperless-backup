@@ -2,7 +2,8 @@
 Storage factory for selecting the correct backend.
 """
 
-from sftp import SFTPStorage
+from storage.sftp_storage import SFTPStorage
+
 
 def get_storage(config: dict):
     """
@@ -12,9 +13,13 @@ def get_storage(config: dict):
         config (dict): Full application configuration.
     
     Returns:
-        Storage: Concrete storage implementation
+        Storage: Concrete storage implementation.
+
+    Raises:
+        ValueError: If no valid storage config found.
     """
     storage_config = config["storage"]
+    
     if "sftp" in storage_config:
         return SFTPStorage(storage_config["sftp"])
     

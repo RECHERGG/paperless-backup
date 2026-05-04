@@ -12,3 +12,7 @@ __pycache__/
 
 # env files
 .env
+private_key.pem
+
+# testing
+.docker
