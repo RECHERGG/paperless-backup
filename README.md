@@ -8,9 +8,15 @@
 
 </div>
 
+**Currently supported methods:**
+- SFTP
+
+**Get your storage here:**
+
+[![Hetzner Badge](https://img.shields.io/badge/Hetzner-D50C2D?logo=hetzner&logoColor=fff&style=for-the-badge)](https://DEIN-AFFILIATE-LINK)
+
 - [ ] retention rules
 - [ ] .tmp file
 - [ ] checksume checking
-- [ ] hetzner badge
 - [ ] publish on docker hub
 - [ ] update docker link to published docker image
