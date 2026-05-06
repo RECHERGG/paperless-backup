@@ -8,6 +8,14 @@
 
 </div>
 
+paperless-backup is a lightweight backup utility for paperless-ngx environments. It automates the creation of consistent backups from a running paperless container and transfers them to remote storage, such as an SFTP server.
+
+The tool is designed to run in containerized setups and is configured entirely through environment variables. It supports configurable backup intervals, flexible file naming, and optional cleanup of local artifacts after successful uploads.
+
+Retention policies can be applied to control long-term storage usage. Multiple strategies are available, ranging from simple “keep last N” behavior to more advanced models like Grandfather-Father-Son (GFS), allowing a balance between short-term recovery points and long-term history.
+
+The focus of this project is reliability, predictable behavior, and minimal operational overhead.
+
 ## Table of Contents
 
 - [TODO's](#todos)
