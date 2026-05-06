@@ -54,8 +54,6 @@ Backups are grouped into time intervals and only a limited number per interval i
 
 This reduces storage usage while preserving useful recovery points across different time ranges.
 
----
-
 ### Simple Strategy
 
 The `simple` strategy keeps only the most recent backups:
@@ -63,8 +61,6 @@ The `simple` strategy keeps only the most recent backups:
 - `keep_last`: total number of backups to retain  
 
 All older backups are deleted regardless of age or distribution.
-
----
 
 ### Time-Based Strategy
 
@@ -74,8 +70,6 @@ The `time` strategy deletes backups based on their age:
 
 Any backup older than this threshold is removed. The number of retained backups depends on how frequently backups are created.
 
----
-
 ### Daily-Only Strategy
 
 The `daily-only` strategy retains one backup per day:
@@ -83,8 +77,6 @@ The `daily-only` strategy retains one backup per day:
 - `keep_days`: number of days to keep  
 
 This is a simplified strategy without hourly or long-term grouping.
-
----
 
 ### No Retention
 
