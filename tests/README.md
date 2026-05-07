@@ -8,10 +8,19 @@ As with any generated code, some tests may evolve over time as the project archi
 
 ## Running Tests
 
+It is recommended to create and activate a virtual environment (**venv**) before installing dependencies to ensure an isolated and reproducible setup.
+
+
+Before installing dependencies, ensure that `pip` is up to date:
+
+```bash
+python -m pip install --upgrade pip
+```
+
 Install test dependencies:
 
 ```bash
-python -m pip install pytest
+python -m pip install pytest paramiko
 ```
 
 Run the test suite:
