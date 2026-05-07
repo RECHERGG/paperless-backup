@@ -27,7 +27,8 @@ The focus of this project is reliability, predictable behavior, and minimal oper
 - [x] retention rules
 - [ ] .tmp file
 - [ ] checksume checking
-- [ ] implement the other retention rules
+- [x] implement the other retention rules
+- [ ] add loop
 - [ ] publish on docker hub
 - [ ] update docker link to published docker image
 
