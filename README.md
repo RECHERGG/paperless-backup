@@ -24,7 +24,7 @@ The focus of this project is reliability, predictable behavior, and minimal oper
   - [No Retention](#no-retention)
 
 # TODO's
-- [ ] retention rules
+- [x] retention rules
 - [ ] .tmp file
 - [ ] checksume checking
 - [ ] implement the other retention rules
