@@ -5,6 +5,7 @@ Handles:
 - export
 - archive
 - upload
+- retention
 - cleanup
 """
 
@@ -16,6 +17,8 @@ from app.backup.exporter import export_data
 from app.backup.archive import create_archive
 from app.backup.utils import cleanup_workspace
 from app.config.typed import AppConfig
+from app.retention import get_policy
+from app.retention.executor import apply_retention
 from app.storage.factory import get_storage
 
 logger = logging.getLogger(__name__)
@@ -29,13 +32,13 @@ def run_backup(
 ) -> None:
     """
     Execute the full backup pipeline:
-    export -> archive -> upload.
+    export -> archive -> upload -> retention.
 
     Args:
         config (AppConfig): Full application configuration.
         filename (str): Target filename for archive.
         remote_file (str): Full path to the remote file.
-        latest_path (str): Path to the latest backup.
+        latest_path (str): Path to the latest backup symlink/copy.
     """
     container = config.paperless.container_name
     delete = config.backup.delete_local_after_upload
@@ -50,13 +53,13 @@ def run_backup(
     logger.debug("Working directory: %s", work_dir)
 
     try:
-        logger.info("Step 1/3: Exporting data...")
+        logger.info("Step 1/4: Exporting data...")
         export_data(container, export_path)
 
-        logger.info("Step 2/3: Creating archive...")
+        logger.info("Step 2/4: Creating archive...")
         archive_file = create_archive(export_path, str(archive_base))
 
-        logger.info("Step 3/3: Uploading archive...")
+        logger.info("Step 3/4: Uploading archive...")
         storage = get_storage(config)
 
         # Upload main backup
@@ -66,6 +69,10 @@ def run_backup(
         storage.upload(archive_file, latest_path)
 
         logger.info("Backup successfully uploaded.")
+
+        logger.info("Step 4/4: Applying retention policy...")
+        policy = get_policy(config.retention)
+        apply_retention(storage, policy)
 
         success = True
 

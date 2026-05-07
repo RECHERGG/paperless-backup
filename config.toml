@@ -19,28 +19,47 @@ password = "${SFTP_PASSWORD}"
 
 remote_path = "${SFTP_PATH:paperless-backups}"
 
+# Retention
+#
+# strategy: one of gfs | simple | time | daily | none
+#
+# GFS (Grandfather-Father-Son) — recommended default
+#   hourly:  keep the N most recent backups (rolling window)
+#   daily:   keep one backup per day for the last N days
+#   weekly:  keep one backup per week for the last N weeks
+#   monthly: keep one backup per month for the last N months
+#
+# simple — keep only the last N backups
+#   keep_last: number of backups to retain
+#
+# time — delete backups older than N days
+#   max_age_days: maximum age in days
+#   minimum_keep: always retain at least this many recent backups (safety floor)
+#
+# daily — one backup per day for the last N days
+#   keep_days:    number of daily snapshots to retain
+#   minimum_keep: always retain at least this many recent backups (safety floor)
+#
+# none — never delete anything (useful for testing or external cleanup)
+
 [retention]
 strategy = "gfs"
 
 [retention.rules]
+# GFS
 hourly = "${RETENTION_HOURLY:24}"
 daily = "${RETENTION_DAILY:7}"
 weekly = "${RETENTION_WEEKLY:4}"
 monthly = "${RETENTION_MONTHLY:12}"
 
-# Alternative retention strategies (examples):
+# Simple
+keep_last = "${RETENTION_KEEP_LAST:10}"
+ 
+# Time-based
+max_age_days = "${RETENTION_MAX_AGE_DAYS:30}"
+ 
+# Daily-only
+keep_days = "${RETENTION_KEEP_DAYS:7}"
 
-# Simple strategy: keep only the last N backups
-# strategy = "simple"
-# keep_last = 20
-
-# Time-based strategy: delete backups older than X days
-# strategy = "time"
-# max_age_days = 30
-
-# Minimal strategy: only daily backups
-# strategy = "daily-only"
-# keep_days = 7
-
-# No cleanup strategy (not recommended)
-# strategy = "none"
+# Shared (used by: time, daily)
+minimum_keep = "${RETENTION_MINIMUM_KEEP:1}"

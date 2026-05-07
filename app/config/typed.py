@@ -32,6 +32,7 @@ class BackupConfig:
     delete_local_after_upload: bool
     keep_failed_backups: bool
 
+
 @dataclass(frozen=True)
 class PaperlessConfig:
     """
@@ -41,6 +42,7 @@ class PaperlessConfig:
         container_name: Docker container name of Paperless instance.
     """
     container_name: str
+
 
 @dataclass(frozen=True)
 class SFTPConfig:
@@ -62,16 +64,60 @@ class SFTPConfig:
     password: str | None
     remote_path: str
 
+
 @dataclass(frozen=True)
 class RetentionConfig:
     """
     Backup retention policy configuration.
+
+    The active strategy is selected via `strategy`. Only the fields
+    relevant to the chosen strategy need to be set - others are ignored.
+
+    Shared:
+        strategy:       One of : gfs | simple | time | daily | none
+        minimum_keep:   Safety floor - always keep at least this many recent
+                        backups, regardless of strategy. Used by: time, daily.
+    
+    GFS (gfs):
+        hourly:     Number of most-recent backups to keep (hourly bucket).
+        daily:      One backup per day for the last N days.
+        weekly:     One backup per week for the last N weeks.
+        monthly:    One backup per month for the last N months.
+
+    Simple (simple):
+        keep_last: Keep only the N most recent backups.
+
+    Time-based (time):
+        max_age_days: Delete backups older than N days.
+        minimum_keep: Always retain at least this many recent backups.
+    
+    Daily-only (daily):"
+        keep_days:      Retain one backup per day for the last N days.
+        minimum_keep:   Always retain at least this many recent backups.
+    
+    No-op (none):
+        No fields required. Nothing is ever deleted. 
     """
     strategy: str
+
+    # GFS
     hourly: int
     daily: int
     weekly: int
     monthly: int
+
+    # Simple
+    keep_last: int
+
+    # Time-based
+    max_age_days: int
+
+    # Daily-only
+    keep_days: int
+
+    # Shared safety floor (time + daily)
+    minimum_keep: int
+
 
 @dataclass(frozen=True)
 class AppConfig:
@@ -85,6 +131,7 @@ class AppConfig:
     storage_sftp: SFTPConfig
     retention: RetentionConfig
 
+
 def load_typed_config() -> AppConfig:
     """
     Load raw config and convert it into a fully typed AppConfig.
@@ -92,8 +139,9 @@ def load_typed_config() -> AppConfig:
     Returns:
         AppConfig: Fully typed application configuration
     """
-
     raw = load_config()
+    r = raw["retention"]
+    rules = r.get("rules", {})
 
     return AppConfig(
         backup=BackupConfig(
@@ -129,11 +177,26 @@ def load_typed_config() -> AppConfig:
             ),
         ),
 
+
         retention=RetentionConfig(
-            strategy=parse_str(raw["retention"]["strategy"], "gfs"),
-            hourly=parse_int(raw["retention"]["rules"]["hourly"], 24),
-            daily=parse_int(raw["retention"]["rules"]["daily"], 7),
-            weekly=parse_int(raw["retention"]["rules"]["weekly"], 4),
-            monthly=parse_int(raw["retention"]["rules"]["monthly"], 12),
+            strategy=parse_str(r.get("strategy"), "gfs"),
+ 
+            # GFS
+            hourly=parse_int(rules.get("hourly"), 24),
+            daily=parse_int(rules.get("daily"), 7),
+            weekly=parse_int(rules.get("weekly"), 4),
+            monthly=parse_int(rules.get("monthly"), 12),
+ 
+            # Simple
+            keep_last=parse_int(rules.get("keep_last"), 10),
+ 
+            # Time-based
+            max_age_days=parse_int(rules.get("max_age_days"), 30),
+ 
+            # Daily-only
+            keep_days=parse_int(rules.get("keep_days"), 7),
+ 
+            # Shared
+            minimum_keep=parse_int(rules.get("minimum_keep"), 1),
         ),
     )
