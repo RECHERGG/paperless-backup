@@ -28,17 +28,19 @@ def run_backup(
     config: AppConfig,
     filename: str,
     remote_file: str,
-    latest_path: str
+    remote_sidecar: str,
+    latest_path: str,
 ) -> None:
     """
     Execute the full backup pipeline:
-    export -> archive -> upload -> retention.
-
+    export → archive → upload → retention.
+ 
     Args:
-        config (AppConfig): Full application configuration.
-        filename (str): Target filename for archive.
-        remote_file (str): Full path to the remote file.
-        latest_path (str): Path to the latest backup symlink/copy.
+        config:          Full application configuration.
+        filename:        Target filename for archive.
+        remote_file:     Full remote path for the archive.
+        remote_sidecar:  Full remote path for the .sha256 sidecar.
+        latest_path:     Remote path for the rolling latest.tar.gz.
     """
     container = config.paperless.container_name
     delete = config.backup.delete_local_after_upload
@@ -49,7 +51,6 @@ def run_backup(
     archive_base = work_dir / filename.replace(".tar.gz", "")
 
     success = False
-
     logger.debug("Working directory: %s", work_dir)
 
     try:
@@ -63,10 +64,10 @@ def run_backup(
         storage = get_storage(config)
 
         # Upload main backup
-        storage.upload(archive_file, remote_file)
+        storage.upload(archive_file, remote_file, remote_sidecar)
 
         # Upload latest backup
-        storage.upload(archive_file, latest_path)
+        storage.upload(archive_file, latest_path, sidecar_path=None)
 
         logger.info("Backup successfully uploaded.")
 

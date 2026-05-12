@@ -12,7 +12,7 @@ qualifies in ANY tier.
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from app.retention.base import BackupFile, RetentionPolicy
 
@@ -59,26 +59,22 @@ class GFSRetentionPolicy(RetentionPolicy):
         keep: set[str] = set()
         now = datetime.now()
 
-        sorted_files = sorted(files, reverse=True)
+        sorted_files = sorted(files, key=lambda f: f.timestamp, reverse=True)
 
         # Hourly: keep the N most recent backups
         for f in sorted_files[: self.hourly]:
             logger.debug("[GFS] hourly keep: %s", f.path)
             keep.add(f.path)
 
-        # Daily:one newest backup per day for the last N days
-        daily_cutoff = now - timedelta(days=self.daily)
         seen_days: dict[tuple, str] = {}
 
         for f in sorted_files:
-            if f.timestamp < daily_cutoff:
-                break
             day_key = (f.timestamp.year, f.timestamp.month, f.timestamp.day)
+
             if day_key not in seen_days:
                 seen_days[day_key] = f.path
             
-        for path in seen_days.values():
-            logger.debug("[GFS] daily keep: %s", path)
+        for path in list(seen_days.values())[: self.daily]:
             keep.add(path)
         
         # Weekly: one newest backup per ISO week for the last N weeks
@@ -86,29 +82,25 @@ class GFSRetentionPolicy(RetentionPolicy):
         seen_weeks: dict[tuple, str] = {}
 
         for f in sorted_files:
-            if f.timestamp < weekly_cutoff:
-                break
             wk = _week_key(f.timestamp)
+
             if wk not in seen_weeks:
                 seen_weeks[wk] = f.path
 
-            for path in seen_weeks.values():
-                logger.debug("[GFS] weekly keep: %s", path)
-                keep.add(path)
+        for path in list(seen_weeks.values())[: self.weekly]:
+            keep.add(path)
 
         # Monthly: one newest backup per month for the last N months
         monthly_cutoff = now - timedelta(days=self.monthly * 30)
         seen_months: dict[tuple, str] = {}
 
         for f in sorted_files:
-            if f.timestamp < monthly_cutoff:
-                break
             mk = _month_key(f.timestamp)
+
             if mk not in seen_months:
                 seen_months[mk] = f.path
 
-        for path in seen_months.values():
-            logger.debug("[GFS] monthly keep: %s", path)
+        for path in list(seen_months.values())[: self.monthly]:
             keep.add(path)
 
         return keep

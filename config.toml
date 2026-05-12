@@ -17,7 +17,7 @@ username = "${SFTP_USERNAME}"
 key = "${SFTP_KEY}"
 password = "${SFTP_PASSWORD}"
 
-remote_path = "${SFTP_PATH:paperless-backups}"
+remote_path = "${SFTP_PATH:paperless}"
 
 # Retention
 #

@@ -17,33 +17,58 @@ from app.config.typed import AppConfig
 logger = logging.getLogger(__name__)
 
 
-def build_remote_dir(base: str, ts: datetime) -> str:
+def build_backup_dir(base: str, ts: datetime) -> str:
     """
-    Build remote directory path (YYYY/MM)
-
-    Example:
-        paperless-backups/2026/05
+    Build the remote directory path for a backup archive.
+ 
+    Structure: <base>/backups/YYYY/MM/DD
+ 
+    Args:
+        base: Configured remote root (e.g. "paperless").
+        ts:   Timestamp of the backup.
+ 
+    Returns:
+        e.g. "paperless/backups/2026/05/07"
     """
-    base = str(PurePosixPath(base))
+    root = str(PurePosixPath(base)).rstrip("/")
+    return f"{root}/backups/{ts.strftime('%Y/%m/%d')}"
 
-    return f"{base.rstrip('/')}/{ts.strftime('%Y/%m')}"
+def build_metadata_dir(base: str, ts: datetime) -> str:
+    """
+    Build the remote directory path for metadata files (e.g. .sha256 sidecars).
+ 
+    Structure: <base>/metadata/YYYY/MM/DD
+ 
+    Keeping metadata in a separate tree makes manual browsing and
+    restore scripts cleaner — no sidecar files mixed in with archives.
+ 
+    Args:
+        base: Configured remote root (e.g. "paperless").
+        ts:   Timestamp of the backup.
+ 
+    Returns:
+        e.g. "paperless/metadata/2026/05/07"
+    """
+    root = str(PurePosixPath(base)).rstrip("/")
+    return f"{root}/metadata/{ts.strftime('%Y/%m/%d')}"
 
 def generate_filename(format_str: str, ts: datetime) -> str:
     """
-    Generate a filename using a timestamp format.
-
+    Generate a filename from a timestamp format string.
+ 
     Args:
-        format_str (str): Format string with placeholders (e.g. "{timestamp}.tar.gz")
-    
+        format_str: Template with {timestamp} placeholder
+                    (e.g. "{timestamp}.tar.gz").
+        ts:         Timestamp to embed.
+ 
     Returns:
-        str: Generated filename.
+        e.g. "2026-05-07_12-00-00.tar.gz"
     """
-    timestamp = ts.strftime("%Y-%m-%d_%H-%M-%S")
-    return format_str.format(timestamp=timestamp)
+    return format_str.format(timestamp=ts.strftime("%Y-%m-%d_%H-%M-%S"))
 
-def run(config: AppConfig):
+def run(config: AppConfig) -> None:
     """
-    Execute the backup process using provided configuration.
+    Execute the backup process using the provided configuration.
 
     Args:
         config (dict): Application configuration.
@@ -51,25 +76,22 @@ def run(config: AppConfig):
     logger.info("Starting backup process...")
 
     now = datetime.now()
-    remote_path = config.storage_sftp.remote_path
+    base = config.storage_sftp.remote_path
+    filename = generate_filename(config.backup.filename_template, now)
 
-    remote_dir = build_remote_dir(
-        remote_path,
-        now,
-    )
+    backup_dir = build_backup_dir(base, now)
+    metadata_dir = build_metadata_dir(base, now)
 
-    filename = generate_filename(
-        config.backup.filename_template,
-        now,
-    )
-
-    remote_file = str(PurePosixPath(f"{remote_dir}/{filename}"))
+    remote_file = str(PurePosixPath(f"{backup_dir}/{filename}"))
+    remote_sidecar = str(PurePosixPath(f"{metadata_dir}/{filename}.sha256"))
+    latest_path = str(PurePosixPath(f"{base}/latest.tar.gz"))
 
     run_backup(
         config=config,
         filename=filename,
         remote_file=remote_file,
-        latest_path=f"{remote_path}/latest.tar.gz"
+        remote_sidecar=remote_sidecar,
+        latest_path=latest_path,
     )
 
     logger.info("Backup process finished.")

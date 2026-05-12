@@ -14,10 +14,6 @@ from app.retention.policy.simple import SimpleRetentionPolicy
 from app.retention.policy.none import NoRetentionPolicy
 from tests.factories import make_backup_files_range, make_backup_file
 
-
-NOW = datetime(2026, 5, 7, 12, 0, 0)
-
-
 def make_storage(remote_files: list[str]) -> MagicMock:
     """Create a mock storage that returns the given file list."""
     storage = MagicMock()
@@ -35,8 +31,8 @@ class TestApplyRetention:
         apply_retention(storage, SimpleRetentionPolicy(keep_last=5))
         storage.delete.assert_not_called()
 
-    def test_deletes_expected_files(self):
-        files = make_backup_files_range(NOW, count=10, step=timedelta(hours=1))
+    def test_deletes_expected_files(self, now):
+        files = make_backup_files_range(now, count=10, step=timedelta(hours=1))
         storage = make_storage(filenames_from(files))
         policy = SimpleRetentionPolicy(keep_last=3)
 
@@ -44,8 +40,8 @@ class TestApplyRetention:
 
         assert storage.delete.call_count == 7
 
-    def test_does_not_delete_kept_files(self):
-        files = make_backup_files_range(NOW, count=5, step=timedelta(hours=1))
+    def test_does_not_delete_kept_files(self, now):
+        files = make_backup_files_range(now, count=5, step=timedelta(hours=1))
         storage = make_storage(filenames_from(files))
         policy = SimpleRetentionPolicy(keep_last=5)
 
@@ -53,16 +49,16 @@ class TestApplyRetention:
 
         storage.delete.assert_not_called()
 
-    def test_none_policy_deletes_nothing(self):
-        files = make_backup_files_range(NOW, count=50, step=timedelta(hours=1))
+    def test_none_policy_deletes_nothing(self, now):
+        files = make_backup_files_range(now, count=50, step=timedelta(hours=1))
         storage = make_storage(filenames_from(files))
 
         apply_retention(storage, NoRetentionPolicy())
 
         storage.delete.assert_not_called()
 
-    def test_dry_run_does_not_call_delete(self):
-        files = make_backup_files_range(NOW, count=10, step=timedelta(hours=1))
+    def test_dry_run_does_not_call_delete(self, now):
+        files = make_backup_files_range(now, count=10, step=timedelta(hours=1))
         storage = make_storage(filenames_from(files))
         policy = SimpleRetentionPolicy(keep_last=2)
 
@@ -71,8 +67,8 @@ class TestApplyRetention:
         storage.delete.assert_not_called()
         assert deleted == 0
 
-    def test_returns_correct_deletion_count(self):
-        files = make_backup_files_range(NOW, count=10, step=timedelta(hours=1))
+    def test_returns_correct_deletion_count(self, now):
+        files = make_backup_files_range(now, count=10, step=timedelta(hours=1))
         storage = make_storage(filenames_from(files))
         policy = SimpleRetentionPolicy(keep_last=4)
 
@@ -90,9 +86,9 @@ class TestApplyRetention:
 
         storage.delete.assert_not_called()
 
-    def test_storage_delete_failure_is_logged_not_raised(self):
+    def test_storage_delete_failure_is_logged_not_raised(self, now):
         """A single failed deletion must not abort the whole retention run."""
-        files = make_backup_files_range(NOW, count=5, step=timedelta(hours=1))
+        files = make_backup_files_range(now, count=5, step=timedelta(hours=1))
         storage = make_storage(filenames_from(files))
         storage.delete.side_effect = Exception("SFTP error")
         policy = SimpleRetentionPolicy(keep_last=1)
