@@ -75,6 +75,8 @@ def run_backup(
         policy = get_policy(config.retention)
         apply_retention(storage, policy)
 
+        storage._ssh.close()
+        
         success = True
 
     except Exception:

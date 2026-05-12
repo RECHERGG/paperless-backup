@@ -29,8 +29,8 @@ class SFTPClient:
     No retry logic, no business rules — callers handle that.
     """
 
-    def __init__(self, transport: paramiko.Transport) -> None:
-        self._sftp = paramiko.SFTPClient.from_transport(transport)
+    def __init__(self, sftp: paramiko.SFTPClient) -> None:
+        self._sftp = sftp
 
     def upload_file(self, local_path: Path, remote_path: str) -> None:
         """Upload a local file to a remote path."""

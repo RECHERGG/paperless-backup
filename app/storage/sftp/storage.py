@@ -160,11 +160,9 @@ class _SFTPSession:
         self._client: SFTPClient | None = None
 
     def __enter__(self) -> SFTPClient:
-        transport = self._ssh.connect()
-        self._client = SFTPClient(transport)
+        sftp = self._ssh.get_sftp()
+        self._client = SFTPClient(sftp)
         return self._client
 
     def __exit__(self, *_) -> None:
-        if self._client:
-            self._client.close()
-        self._ssh.close()
+        pass

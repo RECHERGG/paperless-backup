@@ -31,6 +31,7 @@ class SSHClient:
         self.password = password
 
         self._transport = None
+        self._sftp = None
 
     def _load_key(self, key_str: str):
         key = StringIO(key_str)
@@ -45,10 +46,16 @@ class SSHClient:
                 raise RuntimeError("Unsupported SSH key format") from e
             
     def connect(self):
-        """Establish SSH transport connection."""
+        """Get or establish SSH transport connection."""
+
+        if self._transport and self._transport.is_active():
+            return self._transport
+
         logger.info("Connecting to SSH %s:%s", self.host, self.port)
 
         transport = paramiko.Transport((self.host, self.port))
+
+        transport.set_keepalive(30)
 
         if self.key:
             logger.info("Using SSH key authentication")
@@ -66,7 +73,27 @@ class SSHClient:
         return transport
 
     def close(self):
-        """Close SSH transport."""
+        """Close SFTP and SSH transport."""
+        
+        if self._sftp:
+            self._sftp.close()
+            self._sftp = None
+
         if self._transport:
             self._transport.close()
-            logger.info("SSH connection closed")
+            self._transport = None
+        logger.info("SSH connection closed")
+
+    def get_sftp(self):
+        """Get or establish persistent SFTP session."""
+        transport = self.connect()
+
+        if self._sftp is not None:
+            try:
+                self._sftp.stat(".")
+                return self._sftp
+            except Exception:
+                logger.warning("SFTP session dead, reopening")
+
+        self._sftp = paramiko.SFTPClient.from_transport(transport)
+        return self._sftp
