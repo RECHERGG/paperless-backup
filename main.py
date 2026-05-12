@@ -7,8 +7,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from app.config.loader import load_config
 from app.backup.engine import run
+from app.backup.scheduler import run_scheduler
 from app.config.typed import load_typed_config
 
 
@@ -56,10 +56,16 @@ def main() -> int:
         logger.info("Loading configuration...")
         config = load_typed_config()
 
-        logger.info("Starting backup job...")
-        run(config)
+        logger.info(
+            "Backup scheduler started (interval=%sh)",
+            config.backup.interval_hours,
+        )
 
-        logger.info("Backup finished successfully.")
+        run_scheduler(
+            interval_hours=config.backup.interval_hours,
+            job=lambda: run(config),
+        )
+
         return 0
     except Exception:
         logger.exception("Fatal error during execution.")
