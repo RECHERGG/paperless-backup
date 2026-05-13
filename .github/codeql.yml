@@ -2,9 +2,9 @@ name: CodeQL
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
   schedule:
     # Every Monday at 08:00 UTC — catches newly discovered vulnerabilities
     # in code that hasn't changed recently
