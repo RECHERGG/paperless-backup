@@ -16,7 +16,7 @@ from app.retention.policy.time_based import TimeBasedRetentionPolicy
 from app.retention.policy.daily import DailyRetentionPolicy
 from app.retention.policy.none import NoRetentionPolicy
 
-from tests.factories import make_backup_file, make_backup_files_range
+from factories import make_backup_file, make_backup_files_range
 
 FROZEN = "2026-05-07 12:00:00"
 
