@@ -20,6 +20,7 @@ from app.storage.upload import atomic_upload, TMP_SUFFIX
 # In-memory StorageClient fake
 # ---------------------------------------------------------------------------
 
+
 class FakeStorageClient:
     """
     In-memory StorageClient for testing upload logic without any I/O.
@@ -63,6 +64,7 @@ class FakeStorageClient:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 class TestAtomicUpload:
     def test_file_exists_at_final_path_after_upload(self, tmp_path):

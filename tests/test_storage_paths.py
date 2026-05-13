@@ -11,7 +11,9 @@ class TestBackupPathToSidecarPath:
     def test_standard_path(self):
         backup = "paperless/backups/2026/05/07/2026-05-07_12-00-00.tar.gz"
         sidecar = _backup_path_to_sidecar_path(backup)
-        assert sidecar == "paperless/metadata/2026/05/07/2026-05-07_12-00-00.tar.gz.sha256"
+        assert (
+            sidecar == "paperless/metadata/2026/05/07/2026-05-07_12-00-00.tar.gz.sha256"
+        )
 
     def test_replaces_only_first_backups_segment(self):
         # Pathological case: 'backups' also appears in the root name

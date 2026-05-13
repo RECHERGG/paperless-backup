@@ -41,21 +41,17 @@ class GFSRetentionPolicy(RetentionPolicy):
     """
 
     def __init__(
-        self,
-        hourly: int = 24,
-        daily: int = 7,
-        weekly: int = 4,
-        monthly: int = 12
+        self, hourly: int = 24, daily: int = 7, weekly: int = 4, monthly: int = 12
     ):
         self.hourly = hourly
         self.daily = daily
         self.weekly = weekly
         self.monthly = monthly
 
-    def select_files_to_keep(self, files: list[BackupFile])  -> set[str]:
+    def select_files_to_keep(self, files: list[BackupFile]) -> set[str]:
         if not files:
             return set()
-        
+
         keep: set[str] = set()
 
         sorted_files = sorted(files, key=lambda f: f.timestamp, reverse=True)
@@ -72,10 +68,10 @@ class GFSRetentionPolicy(RetentionPolicy):
 
             if day_key not in seen_days:
                 seen_days[day_key] = f.path
-            
+
         for path in list(seen_days.values())[: self.daily]:
             keep.add(path)
-        
+
         # Weekly: one newest backup per ISO week for the last N weeks
         seen_weeks: dict[tuple, str] = {}
 

@@ -29,16 +29,21 @@ def paths(files) -> set[str]:
 # NoRetentionPolicy — no time dependency, no freeze needed
 # ---------------------------------------------------------------------------
 
+
 class TestNoRetentionPolicy:
     def test_keeps_everything(self):
-        files = make_backup_files_range(datetime(2026, 5, 7, 12), count=100, step=timedelta(hours=1))
+        files = make_backup_files_range(
+            datetime(2026, 5, 7, 12), count=100, step=timedelta(hours=1)
+        )
         assert NoRetentionPolicy().select_files_to_keep(files) == paths(files)
 
     def test_empty_input(self):
         assert NoRetentionPolicy().select_files_to_keep([]) == set()
 
     def test_deletes_nothing(self):
-        files = make_backup_files_range(datetime(2026, 5, 7, 12), count=5, step=timedelta(hours=1))
+        files = make_backup_files_range(
+            datetime(2026, 5, 7, 12), count=5, step=timedelta(hours=1)
+        )
         assert NoRetentionPolicy().select_files_to_delete(files) == []
 
 
@@ -46,18 +51,25 @@ class TestNoRetentionPolicy:
 # SimpleRetentionPolicy — no time dependency, no freeze needed
 # ---------------------------------------------------------------------------
 
+
 class TestSimpleRetentionPolicy:
     def test_keeps_last_n(self):
-        files = make_backup_files_range(datetime(2026, 5, 7, 12), count=20, step=timedelta(hours=1))
+        files = make_backup_files_range(
+            datetime(2026, 5, 7, 12), count=20, step=timedelta(hours=1)
+        )
         assert len(SimpleRetentionPolicy(keep_last=5).select_files_to_keep(files)) == 5
 
     def test_keeps_newest(self):
-        files = make_backup_files_range(datetime(2026, 5, 7, 12), count=10, step=timedelta(hours=1))
+        files = make_backup_files_range(
+            datetime(2026, 5, 7, 12), count=10, step=timedelta(hours=1)
+        )
         keep = SimpleRetentionPolicy(keep_last=3).select_files_to_keep(files)
         assert keep == paths(sorted(files, reverse=True)[:3])
 
     def test_fewer_files_than_keep_last(self):
-        files = make_backup_files_range(datetime(2026, 5, 7, 12), count=3, step=timedelta(hours=1))
+        files = make_backup_files_range(
+            datetime(2026, 5, 7, 12), count=3, step=timedelta(hours=1)
+        )
         assert len(SimpleRetentionPolicy(keep_last=10).select_files_to_keep(files)) == 3
 
     def test_empty_input(self):
@@ -65,20 +77,27 @@ class TestSimpleRetentionPolicy:
 
     def test_single_file(self):
         files = [make_backup_file(datetime(2026, 5, 7, 12))]
-        assert SimpleRetentionPolicy(keep_last=1).select_files_to_keep(files) == paths(files)
+        assert SimpleRetentionPolicy(keep_last=1).select_files_to_keep(files) == paths(
+            files
+        )
 
     def test_keep_last_zero_raises(self):
         with pytest.raises(ValueError):
             SimpleRetentionPolicy(keep_last=0)
 
     def test_delete_count_correct(self):
-        files = make_backup_files_range(datetime(2026, 5, 7, 12), count=10, step=timedelta(hours=1))
-        assert len(SimpleRetentionPolicy(keep_last=3).select_files_to_delete(files)) == 7
+        files = make_backup_files_range(
+            datetime(2026, 5, 7, 12), count=10, step=timedelta(hours=1)
+        )
+        assert (
+            len(SimpleRetentionPolicy(keep_last=3).select_files_to_delete(files)) == 7
+        )
 
 
 # ---------------------------------------------------------------------------
 # TimeBasedRetentionPolicy
 # ---------------------------------------------------------------------------
+
 
 @freeze_time(FROZEN)
 class TestTimeBasedRetentionPolicy:
@@ -121,6 +140,7 @@ class TestTimeBasedRetentionPolicy:
 # DailyRetentionPolicy
 # ---------------------------------------------------------------------------
 
+
 @freeze_time(FROZEN)
 class TestDailyRetentionPolicy:
     def test_keeps_one_per_day(self):
@@ -145,7 +165,9 @@ class TestDailyRetentionPolicy:
         now = datetime(2026, 5, 7, 12)
         files = make_backup_files_range(now, count=30, step=timedelta(days=1))
         policy = DailyRetentionPolicy(keep_days=7, minimum_keep=0)
-        assert len(policy.select_files_to_keep(files)) <= 8  # 7 days + current day boundary
+        assert (
+            len(policy.select_files_to_keep(files)) <= 8
+        )  # 7 days + current day boundary
 
     def test_minimum_keep_safety_floor(self):
         old = make_backup_file(datetime(2026, 5, 7, 12) - timedelta(days=100))
@@ -163,6 +185,7 @@ class TestDailyRetentionPolicy:
 # ---------------------------------------------------------------------------
 # GFSRetentionPolicy
 # ---------------------------------------------------------------------------
+
 
 @freeze_time(FROZEN)
 class TestGFSRetentionPolicy:

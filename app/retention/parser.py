@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 _DEFAULT_PATTERN = re.compile(r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})")
 _DEFAULT_FORMAT = "%Y-%m-%d_%H-%M-%S"
 
+
 def parse_timestamp_from_filename(filename: str) -> datetime | None:
     """
     Extract and parse a timestamp from a backup filename.

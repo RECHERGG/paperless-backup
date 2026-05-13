@@ -24,6 +24,7 @@ def sha256(data: bytes) -> str:
 # compute_sha256_file
 # ---------------------------------------------------------------------------
 
+
 class TestComputeSha256File:
     def test_known_content(self, tmp_path):
         data = b"hello world"
@@ -65,6 +66,7 @@ class TestComputeSha256File:
 # compute_sha256_bytes
 # ---------------------------------------------------------------------------
 
+
 class TestComputeSha256Bytes:
     def test_matches_file_digest(self, tmp_path):
         data = b"some backup content"
@@ -84,6 +86,7 @@ class TestComputeSha256Bytes:
 # ---------------------------------------------------------------------------
 # write_sidecar / read_sidecar
 # ---------------------------------------------------------------------------
+
 
 class TestWriteSidecar:
     def test_creates_file_next_to_archive(self, tmp_path):
@@ -106,7 +109,7 @@ class TestWriteSidecar:
         sidecar = write_sidecar(archive)
         parts = sidecar.read_text().strip().split()
         assert len(parts) == 2
-        assert len(parts[0]) == 64      # digest
+        assert len(parts[0]) == 64  # digest
         assert parts[1] == "backup.tar.gz"
 
     def test_overwrites_stale_sidecar(self, tmp_path):

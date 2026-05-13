@@ -22,6 +22,7 @@ def parse_int(value: str, default: int | None = None) -> int:
         return default
     return int(value)
 
+
 def parse_bool(value: str, default: bool | None = None) -> bool:
     """
     Convert a string to boolean.
@@ -40,10 +41,9 @@ def parse_bool(value: str, default: bool | None = None) -> bool:
     """
     if value is None:
         return default
-    
-    return str(value).strip().lower() in {
-        "1", "true", "yes", "y", "on"
-    }
+
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
+
 
 def parse_str(value: str, default: str | None = None) -> str:
     """

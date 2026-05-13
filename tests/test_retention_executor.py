@@ -13,6 +13,7 @@ from app.retention.policy.simple import SimpleRetentionPolicy
 from app.retention.policy.none import NoRetentionPolicy
 from factories import make_backup_files_range
 
+
 def make_storage(remote_files: list[str]) -> MagicMock:
     """Create a mock storage that returns the given file list."""
     storage = MagicMock()

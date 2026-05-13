@@ -63,7 +63,9 @@ class TestGetPolicy:
         assert isinstance(get_policy(config), GFSRetentionPolicy)
 
     def test_gfs_config_values_passed_through(self):
-        config = make_retention_config(strategy="gfs", hourly=5, daily=3, weekly=2, monthly=6)
+        config = make_retention_config(
+            strategy="gfs", hourly=5, daily=3, weekly=2, monthly=6
+        )
         policy = get_policy(config)
         assert isinstance(policy, GFSRetentionPolicy)
         assert policy.hourly == 5

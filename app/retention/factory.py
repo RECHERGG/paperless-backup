@@ -35,7 +35,7 @@ def get_policy(config: RetentionConfig) -> RetentionPolicy:
 
     Returns:
         Configuraed RetentionPolicy instance.
-    
+
     Raises:
         ValueError: If the strategy name is unknown.
     """
@@ -44,10 +44,9 @@ def get_policy(config: RetentionConfig) -> RetentionPolicy:
     if strategy not in _REGISTRY:
         available = ", ".join(sorted(_REGISTRY))
         raise ValueError(
-            f"Unknown retention strategy '{strategy}'."
-            f"Available: {available}"
+            f"Unknown retention strategy '{strategy}'.Available: {available}"
         )
-    
+
     logger.info("Using retention strategy: '%s'", strategy)
 
     if strategy == "gfs":
@@ -57,10 +56,10 @@ def get_policy(config: RetentionConfig) -> RetentionPolicy:
             weekly=config.weekly,
             monthly=config.monthly,
         )
-    
+
     if strategy == "simple":
         return SimpleRetentionPolicy(keep_last=config.keep_last)
-    
+
     if strategy == "time":
         return TimeBasedRetentionPolicy(
             max_age_days=config.max_age_days,
@@ -72,9 +71,9 @@ def get_policy(config: RetentionConfig) -> RetentionPolicy:
             keep_days=config.keep_days,
             minimum_keep=config.minimum_keep,
         )
-    
+
     if strategy == "none":
         return NoRetentionPolicy()
-    
+
     # Unreachable - registry check above catches unkowns
     raise ValueError(f"Unhandled strategy: {strategy}")

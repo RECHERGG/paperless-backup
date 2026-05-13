@@ -16,17 +16,17 @@ def run_command(cmd: list[str]) -> subprocess.CompletedProcess:
 
     Args:
         cmd (list[str]): Command and arguments.
-    
+
     Returns:
         subprocess.CompletedProcess: Result object.
-    
+
     Raises:
         subprocess.CalledProcessError: If command fails.
     """
     logger.info("Running command: %s", " ".join(cmd))
 
     result = subprocess.run(
-        cmd, 
+        cmd,
         capture_output=True,
         text=True,
     )
@@ -36,16 +36,14 @@ def run_command(cmd: list[str]) -> subprocess.CompletedProcess:
         logger.error("stderr: %s", result.stderr.strip())
 
         raise subprocess.CalledProcessError(
-            result.returncode, 
-            cmd, 
-            output=result.stdout, 
-            stderr=result.stderr
+            result.returncode, cmd, output=result.stdout, stderr=result.stderr
         )
 
     if result.stdout:
         logger.debug("stdout: %s", result.stdout.strip())
 
     return result
+
 
 def cleanup_workspace(workdir: str):
     path = Path(workdir)
