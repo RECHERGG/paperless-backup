@@ -1,0 +1,54 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+
+  "timezone": "Europe/Berlin",
+  "schedule": ["before 9am on Monday"],
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore(deps):",
+  "packageRules": [
+    {
+      "description": "Group all minor + patch Python dependency updates",
+      "matchManagers": ["uv"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Python dependencies (non-major)",
+      "automerge": false
+    },
+    {
+      "description": "Group all minor + patch GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "GitHub Actions (non-major)",
+      "automerge": true
+    },
+    {
+      "description": "Docker base image updates — never automerge, test first",
+      "matchManagers": ["dockerfile"],
+      "automerge": false
+    },
+    {
+      "description": "Pin GitHub Actions to exact SHA for security",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    }
+  ],
+  
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 9am on the first day of the month"]
+  },
+
+  "python": {
+    "registryUrls": ["https://pypi.org/simple/"]
+  },
+
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2
+}
