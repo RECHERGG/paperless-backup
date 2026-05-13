@@ -78,7 +78,6 @@ class GFSRetentionPolicy(RetentionPolicy):
             keep.add(path)
         
         # Weekly: one newest backup per ISO week for the last N weeks
-        weekly_cutoff = now - timedelta(weeks=self.weekly)
         seen_weeks: dict[tuple, str] = {}
 
         for f in sorted_files:
@@ -91,7 +90,6 @@ class GFSRetentionPolicy(RetentionPolicy):
             keep.add(path)
 
         # Monthly: one newest backup per month for the last N months
-        monthly_cutoff = now - timedelta(days=self.monthly * 30)
         seen_months: dict[tuple, str] = {}
 
         for f in sorted_files:

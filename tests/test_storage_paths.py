@@ -4,7 +4,6 @@ Tests for the sidecar path derivation in sftp/storage.py.
 This is pure logic — no SFTP, no mocking needed.
 """
 
-import pytest
 from app.storage.sftp.storage import _backup_path_to_sidecar_path
 
 

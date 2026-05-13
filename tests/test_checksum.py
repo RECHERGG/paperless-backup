@@ -7,7 +7,6 @@ No mocking, no network.
 
 import hashlib
 import pytest
-from pathlib import Path
 
 from app.storage.checksum import (
     compute_sha256_file,
