@@ -67,9 +67,17 @@ def main() -> int:
         )
 
         return 0
+    
+    except KeyboardInterrupt:
+        logger.info("Shutdown requested by user.")
+        return 0
+
     except Exception:
         logger.exception("Fatal error during execution.")
         return 1
 
+    finally:
+        logger.info("Application stopped.")
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
