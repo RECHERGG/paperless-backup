@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=".github/assets/logo.png" width="144" height="144" alt="paperless-backup" />
+  <img src="https://raw.githubusercontent.com/RECHERGG/paperless-backup/refs/heads/master/.github/assets/logo.png" width="144" height="144" alt="paperless-backup" />
   <h1>paperless-backup</h1>
 
   <p><strong>Open-source lightweight backup tool for paperless-ngx</strong></p>
@@ -13,73 +13,126 @@ paperless-backup is a lightweight backup utility for paperless-ngx environments.
 
 The tool is designed to run in containerized setups and is configured entirely through environment variables. It supports configurable backup intervals, flexible file naming, and optional cleanup of local artifacts after successful uploads.
 
-Retention policies can be applied to control long-term storage usage. Multiple strategies are available, ranging from simple “keep last N” behavior to more advanced models like Grandfather-Father-Son (GFS), allowing a balance between short-term recovery points and long-term history.
+Retention policies can be applied to control long-term storage usage. Multiple strategies are available, ranging from simple "keep last N" behavior to more advanced models like Grandfather-Father-Son (GFS), allowing a balance between short-term recovery points and long-term history.
 
 The focus of this project is reliability, predictable behavior, and minimal operational overhead.
 
 ## Table of Contents
 
-- [TODO's](#todos)
-- [Currently supported methods](#currently-supported-methods)
+- [Storage Backends](#storage-backends)
+- [Remote Layout](#remote-layout)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
 - [Retention Strategies](#retention-strategies)
-  - [GFS (Grandfather-Father-Son)](#gfs-grandfather-father-son)
-  - [Simple Strategy](#simple-strategy)
-  - [Time-Based Strategy](#time-based-strategy)
-  - [Daily-Only Strategy](#daily-only-strategy)
-  - [No Retention](#no-retention)
 
-# Currently supported methods
-- SFTP
+## Storage Backends
+
+| Backend | Status |
+|---------|--------|
+| SFTP | ✅ Supported |
+| S3 / compatible | 🔜 Planned |
+
+## Remote Layout
+
+Backups are stored in a structured directory tree on the remote:
+
+```
+paperless/
+├── backups/
+│   └── YYYY/MM/DD/
+│       └── <timestamp>.tar.gz
+├── metadata/
+│   └── YYYY/MM/DD/
+│       └── <timestamp>.tar.gz.sha256
+└── latest.tar.gz
+```
+
+Each archive has a corresponding `.sha256` sidecar written to `metadata/` after a successful upload. `latest.tar.gz` always points to the most recent backup.
+
+## Getting Started
+
+```yaml
+services:
+  paperless-backup:
+    image: ghcr.io/rechergg/paperless-backup:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      PAPERLESS_CONTAINER: paperless-webserver
+      SFTP_HOST: your-storage-box.example.com
+      SFTP_USERNAME: your-username
+      SFTP_KEY: your-private-key
+      SFTP_PATH: paperless
+      BACKUP_INTERVAL_HOURS: 6
+```
+
+A full `docker-compose.coolify.yml` is available in the repository for Coolify deployments.
+
+## Configuration
+
+All configuration is done through environment variables. The `config.toml` in the repository documents every available option with its default value.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PAPERLESS_CONTAINER` | `paperless-webserver` | Name of the Paperless Docker container |
+| `SFTP_HOST` | — | SFTP hostname |
+| `SFTP_PORT` | `22` | SFTP port |
+| `SFTP_USERNAME` | — | SFTP username |
+| `SFTP_KEY` | — | SSH private key (preferred over password) |
+| `SFTP_PASSWORD` | — | SSH password (fallback) |
+| `SFTP_PATH` | `paperless` | Remote root directory |
+| `BACKUP_INTERVAL_HOURS` | `6` | Hours between backups |
+| `BACKUP_FILENAME_TEMPLATE` | `{timestamp}.tar.gz` | Archive filename template |
+| `BACKUP_DELETE_LOCAL_AFTER_UPLOAD` | `true` | Delete local archive after upload |
+| `BACKUP_KEEP_FAILED` | `true` | Keep local workspace on failure for debugging |
 
 ## Retention Strategies
 
-This project supports multiple retention strategies to control how many backups are kept and when old backups are deleted. The goal is to balance storage usage with the ability to restore data from different points in time.
+Configure the strategy via `RETENTION_STRATEGY` (default: `gfs`).
 
-### GFS (Grandfather-Father-Son)
+### GFS — Grandfather-Father-Son
 
-The default strategy is `gfs`, which implements a tiered retention model:
+The default strategy. Keeps backups across four tiers so you always have recent snapshots as well as long-term history.
 
-- Hourly (Son): short-term backups for recent changes  
-- Daily (Father): medium-term backups for day-level recovery  
-- Weekly / Monthly (Grandfather): long-term backups for historical states  
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RETENTION_HOURLY` | `24` | Most recent backups to keep |
+| `RETENTION_DAILY` | `7` | One backup per day for the last N days |
+| `RETENTION_WEEKLY` | `4` | One backup per week for the last N weeks |
+| `RETENTION_MONTHLY` | `12` | One backup per month for the last N months |
 
-Each tier defines how many backups of that type are retained:
+A file is kept if it qualifies in **any** tier — so a weekly snapshot is never deleted just because the hourly window has passed.
 
-- `hourly`: number of hourly backups to keep  
-- `daily`: number of daily backups to keep  
-- `weekly`: number of weekly backups to keep  
-- `monthly`: number of monthly backups to keep  
+### Simple
 
-Backups are grouped into time intervals and only a limited number per interval is retained. As backups age, they are effectively represented by fewer, more coarse-grained restore points (e.g. hourly → daily → weekly → monthly).
+Keeps only the N most recent backups regardless of age.
 
-This reduces storage usage while preserving useful recovery points across different time ranges.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RETENTION_KEEP_LAST` | `10` | Number of backups to retain |
 
-### Simple Strategy
+### Time-based
 
-The `simple` strategy keeps only the most recent backups:
+Deletes any backup older than a configured number of days.
 
-- `keep_last`: total number of backups to retain  
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RETENTION_MAX_AGE_DAYS` | `30` | Maximum backup age in days |
+| `RETENTION_MINIMUM_KEEP` | `1` | Always keep at least this many recent backups |
 
-All older backups are deleted regardless of age or distribution.
+`RETENTION_MINIMUM_KEEP` prevents full deletion during extended outages — even if all backups exceed `max_age_days`, the most recent one is never removed.
 
-### Time-Based Strategy
+### Daily
 
-The `time` strategy deletes backups based on their age:
+Keeps one backup per calendar day for the last N days.
 
-- `max_age_days`: maximum age in days  
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RETENTION_KEEP_DAYS` | `7` | Number of days to retain |
+| `RETENTION_MINIMUM_KEEP` | `1` | Safety floor |
 
-Any backup older than this threshold is removed. The number of retained backups depends on how frequently backups are created.
+### None
 
-### Daily-Only Strategy
-
-The `daily-only` strategy retains one backup per day:
-
-- `keep_days`: number of days to keep  
-
-This is a simplified strategy without hourly or long-term grouping.
-
-### No Retention
-
-The `none` strategy disables cleanup.
-
-All backups are kept indefinitely. This will eventually lead to unbounded storage usage and should only be used in controlled environments.
+Disables cleanup entirely. All backups are kept indefinitely.
+Set `RETENTION_STRATEGY=none` — no additional variables required.
