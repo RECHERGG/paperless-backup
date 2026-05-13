@@ -5,7 +5,7 @@
   ],
 
   "timezone": "Europe/Berlin",
-  "schedule": ["before 9am on Monday"],
+  "schedule": ["before 9am every weekday"],
   "labels": ["dependencies"],
   "commitMessagePrefix": "chore(deps):",
   "packageRules": [
