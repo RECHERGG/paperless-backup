@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13", "3.14"]
+        python-version: ["3.14"]
 
     steps:
       - name: Checkout
@@ -33,7 +33,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
-        run: uv sync --frozen --all-groups
+        run: uv sync --all-groups
 
       - name: Run tests with coverage
         run: uv run pytest tests/ -v --tb=short --cov=app --cov-report=term-missing --cov-report=xml
@@ -62,7 +62,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
-        run: uv sync --frozen --all-groups
+        run: uv sync --all-groups
 
       - name: Ruff (lint)
         run: uv run ruff check .

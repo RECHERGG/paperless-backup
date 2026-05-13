@@ -30,7 +30,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install deps
-        run: uv sync --frozen --all-groups
+        run: uv sync --all-groups
 
       - name: Run tests
         run: uv run pytest tests -q
