@@ -1,0 +1,36 @@
+services:
+  paperless-backup:
+    image: paperless-backup:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      BACKUP_INTERVAL_HOURS: ${BACKUP_INTERVAL_HOURS:-6}
+      BACKUP_FILENAME_TEMPLATE: ${BACKUP_FILENAME_TEMPLATE:-{timestamp}.tar.gz}
+      BACKUP_DELETE_LOCAL_AFTER_UPLOAD: ${BACKUP_DELETE_LOCAL_AFTER_UPLOAD:-true}
+      BACKUP_KEEP_FAILED: ${BACKUP_KEEP_FAILED:-true}
+
+      PAPERLESS_CONTAINER: ${PAPERLESS_CONTAINER:-paperless-webserver}
+
+      SFTP_HOST: ${SFTP_HOST:-}
+      SFTP_PORT: ${SFTP_PORT:-22}
+      SFTP_USERNAME: ${SFTP_USERNAME:-}
+      SFTP_PASSWORD: ${SFTP_PASSWORD:-}
+      SFTP_KEY: ${SFTP_KEY:-}
+
+      SFTP_PATH: ${SFTP_PATH:-paperless}
+
+      RETENTION_HOURLY: ${RETENTION_HOURLY:-24}
+      RETENTION_DAILY: ${RETENTION_DAILY:-7}
+      RETENTION_WEEKLY: ${RETENTION_WEEKLY:-4}
+      RETENTION_MONTHLY: ${RETENTION_MONTHLY:-12}
+
+      RETENTION_KEEP_LAST: ${RETENTION_KEEP_LAST:-10}
+      RETENTION_MAX_AGE_DAYS: ${RETENTION_MAX_AGE_DAYS:-30}
+      RETENTION_KEEP_DAYS: ${RETENTION_KEEP_DAYS:-7}
+      RETENTION_MINIMUM_KEEP: ${RETENTION_MINIMUM_KEEP:-1}
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'python main.py' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

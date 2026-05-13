@@ -17,6 +17,7 @@ from copy import deepcopy
 
 ENV_PATTERN = re.compile(r"\$\{([^}:]+)(?::([\s\S]*))?\}")
 
+
 def resolve_env(values: str) -> str:
     """
     Resolve environment variables inside a string.
@@ -31,12 +32,14 @@ def resolve_env(values: str) -> str:
     Returns:
         str: Resolved string with environment variables substituted
     """
+
     def replacer(match):
         key = match.group(1)
         default = match.group(2)
         return os.getenv(key, default if default is not None else "")
 
     return ENV_PATTERN.sub(replacer, values)
+
 
 def resolve_config(obj):
     """
@@ -47,7 +50,7 @@ def resolve_config(obj):
 
     Args:
         obj (Any): Configuration object (dict, list, str, or primitive)
-    
+
     Returns:
         Any: Fully resolved configuration object
     """
@@ -62,7 +65,8 @@ def resolve_config(obj):
 
     return obj
 
-def load_config(path: str ="config.toml") -> dict:
+
+def load_config(path: str = "config.toml") -> dict:
     """
     Load and resolve the application configuration.
 

@@ -25,9 +25,7 @@ def run_scheduler(
     while True:
         next_backup = _next_run(interval_hours)
 
-        sleep_seconds = (
-            next_backup - datetime.now()
-        ).total_seconds()
+        sleep_seconds = (next_backup - datetime.now()).total_seconds()
 
         logger.info(
             "Next backup scheduled for %s",
@@ -51,9 +49,7 @@ def _next_run(interval_hours: int) -> datetime:
     """
     now = datetime.now()
 
-    next_hour = (
-        (now.hour // interval_hours) + 1
-    ) * interval_hours
+    next_hour = ((now.hour // interval_hours) + 1) * interval_hours
 
     if next_hour >= 24:
         return now.replace(

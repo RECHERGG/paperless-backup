@@ -13,4 +13,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.12",
+    "freezegun>=1.5.5",
 ]
+
+[tool.setuptools]
+packages = ["app"]

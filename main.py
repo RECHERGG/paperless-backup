@@ -21,6 +21,7 @@ def setup_logging():
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
+
 def load_environment(base_dir: Path):
     """
     Load environment variables from .env file if present.
@@ -35,6 +36,7 @@ def load_environment(base_dir: Path):
         logging.getLogger(__name__).debug("Loaded .env file from %s", env_path)
     else:
         logging.getLogger(__name__).debug("No .env file found at %s", env_path)
+
 
 def main() -> int:
     """
@@ -67,7 +69,7 @@ def main() -> int:
         )
 
         return 0
-    
+
     except KeyboardInterrupt:
         logger.info("Shutdown requested by user.")
         return 0
@@ -78,6 +80,7 @@ def main() -> int:
 
     finally:
         logger.info("Application stopped.")
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

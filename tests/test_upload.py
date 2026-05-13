@@ -10,17 +10,16 @@ in a dict. This is called a "test double" or "fake object" — it is simpler
 and more readable than a MagicMock because its behaviour is explicit.
 """
 
-import hashlib
 import pytest
 from pathlib import Path
 
 from app.storage.upload import atomic_upload, TMP_SUFFIX
-from app.storage.checksum import compute_sha256_file
 
 
 # ---------------------------------------------------------------------------
 # In-memory StorageClient fake
 # ---------------------------------------------------------------------------
+
 
 class FakeStorageClient:
     """
@@ -65,6 +64,7 @@ class FakeStorageClient:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 class TestAtomicUpload:
     def test_file_exists_at_final_path_after_upload(self, tmp_path):

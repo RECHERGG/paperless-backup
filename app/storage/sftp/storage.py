@@ -46,7 +46,9 @@ class SFTPStorage(Storage):
             password=config.password,
         )
 
-    def upload(self, local_path: str, remote_path: str, sidecar_path: str | None = None) -> None:
+    def upload(
+        self, local_path: str, remote_path: str, sidecar_path: str | None = None
+    ) -> None:
         """
         Upload a backup archive atomically with SHA-256 verification.
 
@@ -63,14 +65,14 @@ class SFTPStorage(Storage):
         with self._session() as client:
             client.mkdir(remote_dir)
             atomic_upload(client, local, remote_path)
- 
+
             if sidecar_path:
                 sidecar_local = write_sidecar(local)
                 sidecar_remote_dir = sidecar_path.rsplit("/", 1)[0]
                 client.mkdir(sidecar_remote_dir)
                 client.upload_file(sidecar_local, sidecar_path)
                 logger.debug("Sidecar uploaded: %s", sidecar_path)
- 
+
         logger.info("Upload complete: %s", remote_path)
 
     def list_backups(self) -> list[str]:
@@ -85,7 +87,8 @@ class SFTPStorage(Storage):
             all_files = client.list_files(self._remote_base)
 
         eligible = [
-            f for f in all_files
+            f
+            for f in all_files
             if f.rsplit("/", 1)[-1] not in _PROTECTED
             and not any(f.endswith(ext) for ext in _SKIP_EXTENSIONS)
         ]
@@ -108,13 +111,13 @@ class SFTPStorage(Storage):
         if remote_path.rsplit("/", 1)[-1] in _PROTECTED:
             logger.warning("Refusing to delete protected file: %s", remote_path)
             return
-        
+
         sidecar_path = _backup_path_to_sidecar_path(remote_path)
 
         with self._session() as client:
             client.delete(remote_path)
             logger.debug("Deleted archive: %s", remote_path)
- 
+
             if sidecar_path:
                 try:
                     client.delete(sidecar_path)
@@ -125,22 +128,25 @@ class SFTPStorage(Storage):
     def _session(self) -> "_SFTPSession":
         return _SFTPSession(self._ssh)
 
+
 def _backup_path_to_sidecar_path(backup_path: str) -> str | None:
     """
     Derive the metadata sidecar path from a backup archive path.
- 
+
     Replaces the /backups/ segment with /metadata/ and appends .sha256.
- 
+
     Example:
         paperless/backups/2026/05/07/2026-05-07_12-00-00.tar.gz
         → paperless/metadata/2026/05/07/2026-05-07_12-00-00.tar.gz.sha256
- 
+
     Returns None if the path does not contain /backups/ (unexpected layout).
     """
     if "/backups/" not in backup_path:
-        logger.debug("Cannot derive sidecar path — no /backups/ segment: %s", backup_path)
+        logger.debug(
+            "Cannot derive sidecar path — no /backups/ segment: %s", backup_path
+        )
         return None
- 
+
     return backup_path.replace("/backups/", "/metadata/", 1) + SIDECAR_EXTENSION
 
 

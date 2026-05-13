@@ -27,13 +27,13 @@ def export_data(container: str, export_path: Path):
     if export_path.exists():
         logger.debug("Removing existing export directory '%s'", export_path)
         shutil.rmtree(export_path)
-    
-    run_command([
-        "docker", "exec", container, "document_exporter", "/usr/src/paperless/export"
-    ])
 
-    run_command([
-        "docker", "cp", f"{container}:/usr/src/paperless/export", str(export_path)
-    ])
+    run_command(
+        ["docker", "exec", container, "document_exporter", "/usr/src/paperless/export"]
+    )
+
+    run_command(
+        ["docker", "cp", f"{container}:/usr/src/paperless/export", str(export_path)]
+    )
 
     logger.info("Export completed to '%s'", export_path)

@@ -27,14 +27,14 @@ class DailyRetentionPolicy(RetentionPolicy):
     def __init__(self, keep_days: int = 7, minimum_keep: int = 1):
         if keep_days < 1:
             raise ValueError("keep_days must be at least 1")
-        
+
         self.keep_days = keep_days
         self.minimum_keep = minimum_keep
 
     def select_files_to_keep(self, files: list[BackupFile]) -> set[str]:
         if not files:
             return set()
-        
+
         cutoff = datetime.now() - timedelta(days=self.keep_days)
         sorted_files = sorted(files, reverse=True)
 

@@ -10,7 +10,6 @@ What does NOT belong here:
     - SSH connection management (that is SSHClient's job)
 """
 
-import hashlib
 import io
 import logging
 import stat

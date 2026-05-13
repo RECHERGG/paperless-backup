@@ -34,7 +34,7 @@ def run_backup(
     """
     Execute the full backup pipeline:
     export → archive → upload → retention.
- 
+
     Args:
         config:          Full application configuration.
         filename:        Target filename for archive.
@@ -76,7 +76,7 @@ def run_backup(
         apply_retention(storage, policy)
 
         storage._ssh.close()
-        
+
         success = True
 
     except Exception:

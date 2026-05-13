@@ -2,7 +2,6 @@
 Tests for app/backup/engine.py
 """
 
-import pytest
 from datetime import datetime
 
 from app.backup.engine import build_backup_dir, build_metadata_dir, generate_filename
@@ -52,15 +51,22 @@ class TestBuildMetadataDir:
 class TestGenerateFilename:
     def test_default_template(self):
         ts = datetime(2026, 5, 7, 14, 30, 0)
-        assert generate_filename("{timestamp}.tar.gz", ts) == "2026-05-07_14-30-00.tar.gz"
+        assert (
+            generate_filename("{timestamp}.tar.gz", ts) == "2026-05-07_14-30-00.tar.gz"
+        )
 
     def test_custom_template(self):
         ts = datetime(2026, 5, 7, 9, 5, 3)
-        assert generate_filename("backup_{timestamp}.zip", ts) == "backup_2026-05-07_09-05-03.zip"
+        assert (
+            generate_filename("backup_{timestamp}.zip", ts)
+            == "backup_2026-05-07_09-05-03.zip"
+        )
 
     def test_timestamp_zero_padded(self):
         ts = datetime(2026, 1, 1, 0, 0, 0)
-        assert generate_filename("{timestamp}.tar.gz", ts) == "2026-01-01_00-00-00.tar.gz"
+        assert (
+            generate_filename("{timestamp}.tar.gz", ts) == "2026-01-01_00-00-00.tar.gz"
+        )
 
     def test_template_without_placeholder(self):
         ts = datetime(2026, 5, 7, 12, 0, 0)

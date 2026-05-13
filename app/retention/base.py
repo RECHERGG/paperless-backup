@@ -19,12 +19,13 @@ class BackupFile:
         path: Full remote path to the file.
         timestamp: Parsed timestamp from filename.
     """
+
     path: str
     timestamp: datetime
 
     def __lt__(self, other: "BackupFile") -> bool:
         return self.timestamp < other.timestamp
-    
+
 
 class RetentionPolicy(ABC):
     """
@@ -34,7 +35,7 @@ class RetentionPolicy(ABC):
     a set of paths that should be preserved. Everything else
     will be deleted.
     """
-    
+
     @abstractmethod
     def select_files_to_keep(self, files: list[BackupFile]) -> set[str]:
         """
@@ -47,7 +48,7 @@ class RetentionPolicy(ABC):
             Set of remote paths that should NOT be deleted.
         """
         ...
-    
+
     def select_files_to_delete(self, files: list[BackupFile]) -> list[BackupFile]:
         """
         Invert of select_files_to_keep.

@@ -12,7 +12,7 @@ qualifies in ANY tier.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.retention.base import BackupFile, RetentionPolicy
 
@@ -41,23 +41,18 @@ class GFSRetentionPolicy(RetentionPolicy):
     """
 
     def __init__(
-        self,
-        hourly: int = 24,
-        daily: int = 7,
-        weekly: int = 4,
-        monthly: int = 12
+        self, hourly: int = 24, daily: int = 7, weekly: int = 4, monthly: int = 12
     ):
         self.hourly = hourly
         self.daily = daily
         self.weekly = weekly
         self.monthly = monthly
 
-    def select_files_to_keep(self, files: list[BackupFile])  -> set[str]:
+    def select_files_to_keep(self, files: list[BackupFile]) -> set[str]:
         if not files:
             return set()
-        
+
         keep: set[str] = set()
-        now = datetime.now()
 
         sorted_files = sorted(files, key=lambda f: f.timestamp, reverse=True)
 
@@ -73,12 +68,11 @@ class GFSRetentionPolicy(RetentionPolicy):
 
             if day_key not in seen_days:
                 seen_days[day_key] = f.path
-            
+
         for path in list(seen_days.values())[: self.daily]:
             keep.add(path)
-        
+
         # Weekly: one newest backup per ISO week for the last N weeks
-        weekly_cutoff = now - timedelta(weeks=self.weekly)
         seen_weeks: dict[tuple, str] = {}
 
         for f in sorted_files:
@@ -91,7 +85,6 @@ class GFSRetentionPolicy(RetentionPolicy):
             keep.add(path)
 
         # Monthly: one newest backup per month for the last N months
-        monthly_cutoff = now - timedelta(days=self.monthly * 30)
         seen_months: dict[tuple, str] = {}
 
         for f in sorted_files:

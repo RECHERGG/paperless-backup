@@ -4,9 +4,8 @@ Tests for app/config/loader.py
 Tests env-var resolution without touching the filesystem for most cases.
 """
 
-import pytest
 import os
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 
 from app.config.loader import resolve_env, resolve_config
 

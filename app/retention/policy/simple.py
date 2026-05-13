@@ -28,7 +28,7 @@ class SimpleRetentionPolicy(RetentionPolicy):
     def select_files_to_keep(self, files: list[BackupFile]) -> set[str]:
         if not files:
             return set()
-        
+
         sorted_files = sorted(files, reverse=True)
         keep = {f.path for f in sorted_files[: self.keep_last]}
 

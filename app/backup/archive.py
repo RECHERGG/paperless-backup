@@ -22,7 +22,7 @@ def create_archive(source: Path, output_base: str) -> str:
 
     Returns:
         str: Full path to created archive file.
-    
+
     Raises:
         FileNotFoundError: If the source directory does not exist.
 

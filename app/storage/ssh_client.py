@@ -15,7 +15,14 @@ logger = logging.getLogger(__name__)
 
 
 class SSHClient:
-    def __init__(self, host: str, port: int, username: str, key: str | None = None, password: str | None = None):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        username: str,
+        key: str | None = None,
+        password: str | None = None,
+    ):
         """
         Args:
             host: SSH host
@@ -43,7 +50,7 @@ class SSHClient:
                 return paramiko.RSAKey.from_private_key(key)
             except Exception as e:
                 raise RuntimeError("Unsupported SSH key format") from e
-            
+
     def connect(self):
         """Establish SSH transport connection."""
         logger.info("Connecting to SSH %s:%s", self.host, self.port)
@@ -61,7 +68,7 @@ class SSHClient:
 
         else:
             raise ValueError("No authentication method provided for SSH connection")
-        
+
         self._transport = transport
         return transport
 

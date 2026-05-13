@@ -6,9 +6,9 @@ Think of it as @BeforeEach setup that's available project-wide.
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from tests.factories import make_backup_file, make_backup_files_range
+from factories import make_backup_file
 
 
 @pytest.fixture

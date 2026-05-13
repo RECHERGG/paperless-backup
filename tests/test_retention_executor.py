@@ -5,14 +5,14 @@ Uses unittest.mock to fake the storage backend.
 This is the Python equivalent of Mockito in Java.
 """
 
-import pytest
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, call, patch
+from datetime import timedelta
+from unittest.mock import MagicMock
 
 from app.retention.executor import apply_retention
 from app.retention.policy.simple import SimpleRetentionPolicy
 from app.retention.policy.none import NoRetentionPolicy
-from tests.factories import make_backup_files_range, make_backup_file
+from factories import make_backup_files_range
+
 
 def make_storage(remote_files: list[str]) -> MagicMock:
     """Create a mock storage that returns the given file list."""
