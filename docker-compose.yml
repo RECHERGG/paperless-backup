@@ -1,6 +1,6 @@
 services:
   paperless-backup:
-    image: paperless-backup:latest
+    image: rechergg/paperless-backup:latest
     restart: unless-stopped
 
     volumes:
