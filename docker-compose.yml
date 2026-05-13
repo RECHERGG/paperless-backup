@@ -1,0 +1,28 @@
+services:
+  paperless-backup:
+    image: paperless-backup:latest
+    restart: unless-stopped
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      
+    environment:
+      PAPERLESS_CONTAINER: paperless-webserver
+ 
+      SFTP_HOST: your-storage-box.your-server.de
+      SFTP_PORT: 22
+      SFTP_USERNAME: your-username
+      # Provide either key or password — key is preferred
+      SFTP_KEY: ""
+      SFTP_PASSWORD: ""
+      SFTP_PATH: paperless
+
+      BACKUP_INTERVAL_HOURS: 6
+      BACKUP_FILENAME_TEMPLATE: "{timestamp}.tar.gz"
+      BACKUP_DELETE_LOCAL_AFTER_UPLOAD: "true"
+      BACKUP_KEEP_FAILED: "true"
+ 
+      RETENTION_HOURLY: 24
+      RETENTION_DAILY: 7
+      RETENTION_WEEKLY: 4
+      RETENTION_MONTHLY: 12
