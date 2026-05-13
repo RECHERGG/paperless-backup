@@ -36,7 +36,7 @@ jobs:
         run: uv lock
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --extra dev
 
       - name: Run tests with coverage
         run: uv run pytest tests/ -v --tb=short --cov=app --cov-report=term-missing --cov-report=xml
@@ -68,7 +68,7 @@ jobs:
         run: uv lock
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --extra dev
 
       - name: Ruff (lint)
         run: uv run ruff check .
