@@ -6,7 +6,7 @@
 
   [![python-badge](https://badges.penpow.dev/badges/built-with/python/cozy.png)](https://www.python.org/)
   [![dono-badge](https://badges.penpow.dev/badges/donate/github-sponsors-singular/cozy.png)](https://github.com/sponsors/RECHERGG)
-  [![docker-badge](https://badges.penpow.dev/badges/supported/docker/cozy.png)]([https://www.docker.com/](https://hub.docker.com/r/rechergg/paperless-backup))
+  [![docker-badge](https://badges.penpow.dev/badges/supported/docker/cozy.png)](https://hub.docker.com/r/rechergg/paperless-backup)
 </div>
 
 paperless-backup is a lightweight backup utility for paperless-ngx environments. It automates the creation of consistent backups from a running paperless container and transfers them to remote storage, such as an SFTP server.
