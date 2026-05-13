@@ -9,8 +9,6 @@
   [![python-badge](https://badges.penpow.dev/badges/built-with/python/cozy.png)](https://www.python.org/)
 </div>
 
----
-
 paperless-backup is a lightweight backup utility for paperless-ngx environments. It automates the creation of consistent backups from a running paperless container and transfers them to remote storage, such as an SFTP server.
 
 The tool is designed to run in containerized setups and is configured entirely through environment variables. It supports configurable backup intervals, flexible file naming, and optional cleanup of local artifacts after successful uploads.
