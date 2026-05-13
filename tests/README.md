@@ -10,20 +10,50 @@ As with any generated code, some tests may evolve over time as the project archi
 
 It is recommended to create and activate a virtual environment (**venv**) before installing dependencies to ensure an isolated and reproducible setup.
 
+### Create a Virtual Environment
+Linux / macOS:
 
+```bash
+python -m venv venv
+```
+
+Windows (PowerShell):
+```bash
+python -m venv venv
+```
+
+### Activate the Virtual Environment
+Linux / macOS:
+
+```bash
+source venv/bin/activate
+```
+
+Windows (PowerShell):
+```bash
+venv\Scripts\Activate.ps1
+```
+
+Windows (CMD):
+```bash
+venv\Scripts\activate.bat
+```
+
+### Upgrade pip
 Before installing dependencies, ensure that `pip` is up to date:
 
 ```bash
 python -m pip install --upgrade pip
 ```
 
-Install test dependencies:
+### Install Project and Test Dependencies
+Install all required runtime and development dependencies defined in `pyproject.toml`:
 
 ```bash
-python -m pip install pytest paramiko
+python -m pip install ".[dev]"
 ```
 
-Run the test suite:
+### Run the test suite:
 
 ```bash
 python -m pytest tests/ -v
