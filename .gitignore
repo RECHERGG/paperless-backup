@@ -16,3 +16,4 @@ private_key.pem
 
 # testing
 .docker
+.testing
