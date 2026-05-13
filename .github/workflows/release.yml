@@ -38,7 +38,9 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
-        run: uv sync --frozen --all-groups
+        run: |
+          uv sync --extra dev
+          uv pip install -e .
 
       - name: Run tests
         run: uv run pytest tests -q
