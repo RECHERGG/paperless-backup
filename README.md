@@ -28,16 +28,6 @@ The focus of this project is reliability, predictable behavior, and minimal oper
   - [Daily-Only Strategy](#daily-only-strategy)
   - [No Retention](#no-retention)
 
-# TODO's
-- [x] retention rules
-- [x] .tmp file
-- [x] checksume checking
-- [x] implement the other retention rules
-- [x] add loop
-- [ ] publish on docker hub
-- [ ] update docker link to published docker image
-
-
 # Currently supported methods
 - SFTP
 
