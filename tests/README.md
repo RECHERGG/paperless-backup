@@ -12,24 +12,24 @@ It is recommended to create and activate a virtual environment (**venv**) before
 
 ### Create a Virtual Environment
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 ### Activate the Virtual Environment
 Linux / macOS:
 
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 Windows (PowerShell):
 ```bash
-venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1
 ```
 
 Windows (CMD):
 ```bash
-venv\Scripts\activate.bat
+.venv\Scripts\activate.bat
 ```
 
 ### Upgrade pip
