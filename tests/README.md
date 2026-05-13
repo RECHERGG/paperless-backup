@@ -11,13 +11,6 @@ As with any generated code, some tests may evolve over time as the project archi
 It is recommended to create and activate a virtual environment (**venv**) before installing dependencies to ensure an isolated and reproducible setup.
 
 ### Create a Virtual Environment
-Linux / macOS:
-
-```bash
-python -m venv venv
-```
-
-Windows (PowerShell):
 ```bash
 python -m venv venv
 ```
