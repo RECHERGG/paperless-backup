@@ -5,9 +5,8 @@ Uses unittest.mock to fake the storage backend.
 This is the Python equivalent of Mockito in Java.
 """
 
-import pytest
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, call, patch
+from datetime import timedelta
+from unittest.mock import MagicMock
 
 from app.retention.executor import apply_retention
 from app.retention.policy.simple import SimpleRetentionPolicy

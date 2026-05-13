@@ -4,7 +4,6 @@ Tests for app/retention/parser.py
 Covers timestamp extraction from filenames.
 """
 
-import pytest
 from datetime import datetime
 from app.retention.parser import parse_timestamp_from_filename
 

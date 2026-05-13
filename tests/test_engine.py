@@ -2,7 +2,6 @@
 Tests for app/backup/engine.py
 """
 
-import pytest
 from datetime import datetime
 
 from app.backup.engine import build_backup_dir, build_metadata_dir, generate_filename

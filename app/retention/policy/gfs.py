@@ -12,7 +12,7 @@ qualifies in ANY tier.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.retention.base import BackupFile, RetentionPolicy
 
@@ -57,7 +57,6 @@ class GFSRetentionPolicy(RetentionPolicy):
             return set()
         
         keep: set[str] = set()
-        now = datetime.now()
 
         sorted_files = sorted(files, key=lambda f: f.timestamp, reverse=True)
 
