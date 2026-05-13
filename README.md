@@ -25,6 +25,10 @@ The focus of this project is reliability, predictable behavior, and minimal oper
 - [Configuration](#configuration)
 - [Retention Strategies](#retention-strategies)
 
+## TODO's
+- [ ] better scheduler like cron job
+- [ ] better readme's (format code commands etc)
+
 ## Storage Backends
 
 | Backend | Status |
