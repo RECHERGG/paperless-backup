@@ -139,29 +139,6 @@ class AppConfig:
     retention: RetentionConfig
 
 
-def validate_sftp_auth(cfg: SFTPConfig) -> None:
-    """
-    Validate that exactly one SFTP authentication method is provided.
-
-    Raises:
-        ValueError: If no auth method is provided or if more than one is provided.
-    """
-    methods = [
-        cfg.key,
-        cfg.key_path,
-        cfg.password,
-    ]
-
-    active = [m for m in methods if m and m.strip()]
-    count = len(active)
-
-    if count == 0:
-        raise ValueError("No SFTP auth method provided")
-
-    if count > 1:
-        raise ValueError("Only one SFTP auth method allowed")
-
-
 def load_typed_config() -> AppConfig:
     """
     Load raw config and convert it into a fully typed AppConfig.
@@ -204,8 +181,6 @@ def load_typed_config() -> AppConfig:
             "paperless-backups",
         ),
     )
-
-    validate_sftp_auth(storage_sftp)
 
     retention = RetentionConfig(
         strategy=parse_str(r.get("strategy"), "gfs"),
