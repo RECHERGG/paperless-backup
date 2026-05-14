@@ -27,6 +27,7 @@ The focus of this project is reliability, predictable behavior, and minimal oper
 
 ## TODO's
 - [ ] better scheduler like cron job
+- [ ] environment variable to load key from path
 - [ ] better readme's (format code commands etc)
 
 ## Storage Backends
