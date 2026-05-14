@@ -10,12 +10,10 @@ Responsibilities:
 - Ensure correct types (int, bool, str)
 - Provide a single source of truth for application config
 """
-
 from dataclasses import dataclass
 
 from app.config.loader import load_config
 from app.config.parsers import parse_int, parse_bool, parse_str
-
 
 @dataclass(frozen=True)
 class BackupConfig:
@@ -138,30 +136,6 @@ class AppConfig:
     storage_sftp: SFTPConfig
     retention: RetentionConfig
 
-
-def validate_sftp_auth(cfg: SFTPConfig) -> None:
-    """
-    Validate that exactly one SFTP authentication method is provided.
-
-    Raises:
-        ValueError: If no auth method is provided or if more than one is provided.
-    """
-    methods = [
-        cfg.key,
-        cfg.key_path,
-        cfg.password,
-    ]
-
-    active = [m for m in methods if m and m.strip()]
-    count = len(active)
-
-    if count == 0:
-        raise ValueError("No SFTP auth method provided")
-
-    if count > 1:
-        raise ValueError("Only one SFTP auth method allowed")
-
-
 def load_typed_config() -> AppConfig:
     """
     Load raw config and convert it into a fully typed AppConfig.
@@ -204,9 +178,7 @@ def load_typed_config() -> AppConfig:
             "paperless-backups",
         ),
     )
-
-    validate_sftp_auth(storage_sftp)
-
+    
     retention = RetentionConfig(
         strategy=parse_str(r.get("strategy"), "gfs"),
         # GFS
