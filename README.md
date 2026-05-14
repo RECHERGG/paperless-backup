@@ -25,6 +25,12 @@ The focus of this project is reliability, predictable behavior, and minimal oper
 - [Configuration](#configuration)
 - [Retention Strategies](#retention-strategies)
 
+## TODO's
+- [ ] better scheduler like cron job
+- [ ] environment variable to load key from path
+- [ ] healthcheck for docker container
+- [ ] better readme's (format code commands etc)
+
 ## Storage Backends
 
 | Backend | Status |
@@ -80,6 +86,7 @@ All configuration is done through environment variables. The `config.toml` in th
 | `SFTP_PORT` | `22` | SFTP port |
 | `SFTP_USERNAME` | — | SFTP username |
 | `SFTP_KEY` | — | SSH private key (preferred over password) |
+| `SFTP_KEY_PATH` | — | Path to the SSH private key (preferred over password) |
 | `SFTP_PASSWORD` | — | SSH password (fallback) |
 | `SFTP_PATH` | `paperless` | Remote root directory |
 | `BACKUP_INTERVAL_HOURS` | `6` | Hours between backups |

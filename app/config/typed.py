@@ -65,6 +65,7 @@ class SFTPConfig:
     port: int
     username: str
     key: str | None
+    key_path: str | None
     password: str | None
     remote_path: str
 
@@ -138,6 +139,23 @@ class AppConfig:
     retention: RetentionConfig
 
 
+def validate_sftp_auth(cfg: SFTPConfig) -> None:
+    """
+    Validate that exactly one SFTP authentication method is provided.
+
+    Raises:
+        ValueError: If no auth method is provided or if more than one is provided.
+    """
+    methods = [cfg.key, cfg.key_path, cfg.password]
+    count = sum(x is not None for x in methods)
+
+    if count == 0:
+        raise ValueError("No SFTP auth method provided")
+
+    if count > 1:
+        raise ValueError("Only one SFTP auth method allowed")
+
+
 def load_typed_config() -> AppConfig:
     """
     Load raw config and convert it into a fully typed AppConfig.
@@ -149,49 +167,60 @@ def load_typed_config() -> AppConfig:
     r = raw["retention"]
     rules = r.get("rules", {})
 
+    backup = BackupConfig(
+        interval_hours=parse_int(raw["backup"]["interval_hours"], 6),
+        filename_template=parse_str(
+            raw["backup"]["filename_template"],
+            "{timestamp}.tar.gz",
+        ),
+        delete_local_after_upload=parse_bool(
+            raw["backup"]["delete_local_after_upload"], True
+        ),
+        keep_failed_backups=parse_bool(raw["backup"]["keep_failed_backups"], True),
+    )
+
+    paperless = PaperlessConfig(
+        container_name=parse_str(
+            raw["paperless"]["container_name"],
+            "paperless-webserver",
+        ),
+    )
+
+    storage_sftp = SFTPConfig(
+        host=raw["storage"]["sftp"]["host"],
+        port=parse_int(raw["storage"]["sftp"]["port"], 22),
+        username=raw["storage"]["sftp"]["username"],
+        key=raw["storage"]["sftp"].get("key"),
+        key_path=raw["storage"]["sftp"].get("key_path"),
+        password=raw["storage"]["sftp"].get("password"),
+        remote_path=parse_str(
+            raw["storage"]["sftp"]["remote_path"],
+            "paperless-backups",
+        ),
+    )
+
+    validate_sftp_auth(storage_sftp)
+
+    retention = RetentionConfig(
+        strategy=parse_str(r.get("strategy"), "gfs"),
+        # GFS
+        hourly=parse_int(rules.get("hourly"), 24),
+        daily=parse_int(rules.get("daily"), 7),
+        weekly=parse_int(rules.get("weekly"), 4),
+        monthly=parse_int(rules.get("monthly"), 12),
+        # Simple
+        keep_last=parse_int(rules.get("keep_last"), 10),
+        # Time-based
+        max_age_days=parse_int(rules.get("max_age_days"), 30),
+        # Daily-only
+        keep_days=parse_int(rules.get("keep_days"), 7),
+        # Shared
+        minimum_keep=parse_int(rules.get("minimum_keep"), 1),
+    )
+
     return AppConfig(
-        backup=BackupConfig(
-            interval_hours=parse_int(raw["backup"]["interval_hours"], 6),
-            filename_template=parse_str(
-                raw["backup"]["filename_template"],
-                "{timestamp}.tar.gz",
-            ),
-            delete_local_after_upload=parse_bool(
-                raw["backup"]["delete_local_after_upload"], True
-            ),
-            keep_failed_backups=parse_bool(raw["backup"]["keep_failed_backups"], True),
-        ),
-        paperless=PaperlessConfig(
-            container_name=parse_str(
-                raw["paperless"]["container_name"],
-                "paperless-webserver",
-            ),
-        ),
-        storage_sftp=SFTPConfig(
-            host=raw["storage"]["sftp"]["host"],
-            port=parse_int(raw["storage"]["sftp"]["port"], 22),
-            username=raw["storage"]["sftp"]["username"],
-            key=raw["storage"]["sftp"].get("key"),
-            password=raw["storage"]["sftp"].get("password"),
-            remote_path=parse_str(
-                raw["storage"]["sftp"]["remote_path"],
-                "paperless-backups",
-            ),
-        ),
-        retention=RetentionConfig(
-            strategy=parse_str(r.get("strategy"), "gfs"),
-            # GFS
-            hourly=parse_int(rules.get("hourly"), 24),
-            daily=parse_int(rules.get("daily"), 7),
-            weekly=parse_int(rules.get("weekly"), 4),
-            monthly=parse_int(rules.get("monthly"), 12),
-            # Simple
-            keep_last=parse_int(rules.get("keep_last"), 10),
-            # Time-based
-            max_age_days=parse_int(rules.get("max_age_days"), 30),
-            # Daily-only
-            keep_days=parse_int(rules.get("keep_days"), 7),
-            # Shared
-            minimum_keep=parse_int(rules.get("minimum_keep"), 1),
-        ),
+        backup=backup,
+        paperless=paperless,
+        storage_sftp=storage_sftp,
+        retention=retention,
     )

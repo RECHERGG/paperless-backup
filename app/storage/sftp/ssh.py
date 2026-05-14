@@ -21,6 +21,7 @@ class SSHClient:
         port: int,
         username: str,
         key: str | None = None,
+        key_path: str | None = None,
         password: str | None = None,
     ):
         """
@@ -29,18 +30,20 @@ class SSHClient:
             port: SSH port
             username: SSH user
             key: private key content (optional)
+            key_path: Path to private key (optional)
             password: password fallback (optional)
         """
         self.host = host
         self.port = port
         self.username = username
         self.key = key
+        self.key_path = key_path
         self.password = password
 
         self._transport = None
         self._sftp = None
 
-    def _load_key(self, key_str: str):
+    def _load_key_from_string(self, key_str: str):
         key = StringIO(key_str)
 
         try:
@@ -51,6 +54,15 @@ class SSHClient:
                 return paramiko.RSAKey.from_private_key(key)
             except Exception as e:
                 raise RuntimeError("Unsupported SSH key format") from e
+
+    def _load_key_from_file(self, key_path: str):
+        try:
+            return paramiko.Ed25519Key.from_private_key_file(key_path)
+        except Exception:
+            try:
+                return paramiko.RSAKey.from_private_key_file(key_path)
+            except Exception as e:
+                raise RuntimeError(f"Unsupported SSH key format: {key_path}") from e
 
     def connect(self):
         """Get or establish SSH transport connection."""
@@ -64,14 +76,31 @@ class SSHClient:
 
         transport.set_keepalive(30)
 
-        if self.key:
+        if self.key_path:
+            logger.info("Using SSH key file authentication")
+            pkey = self._load_key_from_file(self.key_path)
+
+            transport.connect(
+                username=self.username,
+                pkey=pkey,
+            )
+
+        elif self.key:
             logger.info("Using SSH key authentication")
-            pkey = self._load_key(self.key)
-            transport.connect(username=self.username, pkey=pkey)
+            pkey = self._load_key_from_string(self.key)
+
+            transport.connect(
+                username=self.username,
+                pkey=pkey,
+            )
 
         elif self.password:
             logger.info("Using password authentication")
-            transport.connect(username=self.username, password=self.password)
+
+            transport.connect(
+                username=self.username,
+                password=self.password,
+            )
 
         else:
             raise ValueError("No authentication method provided for SSH connection")

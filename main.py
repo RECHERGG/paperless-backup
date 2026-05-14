@@ -58,11 +58,6 @@ def main() -> int:
         logger.info("Loading configuration...")
         config = load_typed_config()
 
-        logger.info(
-            "Backup scheduler started (interval=%sh)",
-            config.backup.interval_hours,
-        )
-
         run_scheduler(
             interval_hours=config.backup.interval_hours,
             job=lambda: run(config),
