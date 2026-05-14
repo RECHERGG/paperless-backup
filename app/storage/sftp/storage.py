@@ -43,6 +43,7 @@ class SFTPStorage(Storage):
             port=int(config.port),
             username=config.username,
             key=config.key,
+            key_path=config.key_path,
             password=config.password,
         )
 
