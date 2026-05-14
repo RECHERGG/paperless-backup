@@ -15,6 +15,7 @@ port = "${SFTP_PORT:22}"
 username = "${SFTP_USERNAME}"
 
 key = "${SFTP_KEY}"
+key_path = "${SFTP_KEY_PATH}"
 password = "${SFTP_PASSWORD}"
 
 remote_path = "${SFTP_PATH:paperless}"

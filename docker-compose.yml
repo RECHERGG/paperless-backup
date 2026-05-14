@@ -14,6 +14,7 @@ services:
       SFTP_USERNAME: your-username
       # Provide either key or password — key is preferred
       SFTP_KEY: ""
+      SFTP_KEY_PATH: ""
       SFTP_PASSWORD: ""
       SFTP_PATH: paperless
 
