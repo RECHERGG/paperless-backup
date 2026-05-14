@@ -146,8 +146,14 @@ def validate_sftp_auth(cfg: SFTPConfig) -> None:
     Raises:
         ValueError: If no auth method is provided or if more than one is provided.
     """
-    methods = [cfg.key, cfg.key_path, cfg.password]
-    count = sum(x is not None for x in methods)
+    methods = [
+        cfg.key,
+        cfg.key_path,
+        cfg.password,
+    ]
+
+    active = [m for m in methods if m and m.strip()]
+    count = len(active)
 
     if count == 0:
         raise ValueError("No SFTP auth method provided")
