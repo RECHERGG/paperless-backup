@@ -58,6 +58,7 @@ def main() -> int:
         logger.info("Loading configuration...")
         config = load_typed_config()
 
+        logger.info("Create initial backup...")
         run(config)
 
         run_scheduler(
