@@ -10,10 +10,12 @@ Responsibilities:
 - Ensure correct types (int, bool, str)
 - Provide a single source of truth for application config
 """
+
 from dataclasses import dataclass
 
 from app.config.loader import load_config
 from app.config.parsers import parse_int, parse_bool, parse_str
+
 
 @dataclass(frozen=True)
 class BackupConfig:
@@ -136,6 +138,7 @@ class AppConfig:
     storage_sftp: SFTPConfig
     retention: RetentionConfig
 
+
 def load_typed_config() -> AppConfig:
     """
     Load raw config and convert it into a fully typed AppConfig.
@@ -178,7 +181,7 @@ def load_typed_config() -> AppConfig:
             "paperless-backups",
         ),
     )
-    
+
     retention = RetentionConfig(
         strategy=parse_str(r.get("strategy"), "gfs"),
         # GFS
